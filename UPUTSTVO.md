@@ -120,8 +120,9 @@ Sajt se nalazi u GitHub repozitorijumu i GitHub ga sam objavljuje na domenu.
    Za 1–2 minuta sajt radi na `https://KORISNIK.github.io/skroz/`.
 5. **Domen na GitHub-u:** **Settings → Pages → Custom domain** → upišite `domen.rs` → **Save**.
 
-### Domen na Loopiji
+### Domen na Loopiji (LoopiaDNS)
 
+Za DNS editor je potreban paket **LoopiaDNS** (49 din mesečno).
 Loopia korisnička zona → kliknite domen → **DNS editor**.
 
 1. Kod **@** obrišite (crveno dugme **Delete**) sve postojeće **A** i **AAAA** zapise.
@@ -129,6 +130,7 @@ Loopia korisnička zona → kliknite domen → **DNS editor**.
    `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
 3. Kod **www** obrišite postojeći zapis i dodajte **CNAME** sa vrednošću `KORISNIK.github.io`
 4. Ako postoji poddomen **\*** (zvezdica), obrišite ga.
+5. Ne koristite Loopijino „prosleđivanje www saobraćaja“ — sve ide preko zapisa iznad.
 
 Posle 15 minuta do nekoliko sati, u **Settings → Pages** piše *DNS check successful*.
 Tada štiklirajte **Enforce HTTPS** (sertifikat može da kasni do sat vremena).
