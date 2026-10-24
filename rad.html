@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rad | skro.z</title>
+  <meta name="description" content="skro.z — arhitektonski studio. Fotografije i 360° pogled projekta.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="slike/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Roboto:wght@300;400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.min.css">
+  <link rel="stylesheet" href="css/stil.css">
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.min.js",
+        "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.module.js",
+        "@photo-sphere-viewer/autorotate-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/autorotate-plugin@5.15.1/index.module.js",
+        "@photo-sphere-viewer/gyroscope-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/gyroscope-plugin@5.15.1/index.module.js"
+      }
+    }
+  </script>
+</head>
+<body data-strana="rad" id="vrh">
+
+  <div class="prelaz" aria-hidden="true"></div>
+
+  <!-- ZAGLAVLJE -->
+  <header class="zaglavlje">
+    <div class="okvir zaglavlje__unutra">
+      <a class="logo" href="index.html" aria-label="skro.z — početna">
+        <span class="logo__ime" data-logo>skro.z</span>
+      </a>
+      <nav class="meni" aria-label="Glavni meni">
+        <a href="index.html#radovi" class="je-aktivan">Radovi</a>
+        <a href="index.html#usluge">Usluge</a>
+        <a href="index.html#o-meni">O meni</a>
+        <a href="index.html#kontakt">Kontakt</a>
+      </nav>
+      <button class="meni-dugme" type="button" aria-expanded="false" aria-controls="mob-meni">
+        <span class="meni-dugme__tekst">Meni</span><span class="meni-dugme__ikona"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mob-meni" id="mob-meni">
+    <nav aria-label="Meni">
+      <a href="index.html#radovi"><span>01</span>Radovi</a>
+      <a href="index.html#usluge"><span>02</span>Usluge</a>
+      <a href="index.html#o-meni"><span>03</span>O meni</a>
+      <a href="index.html#kontakt"><span>04</span>Kontakt</a>
+    </nav>
+    <div class="mob-meni__kontakt"></div>
+  </div>
+
+  <main></main>
+
+  <!-- PODNOŽJE -->
+  <footer class="podnozje">
+    <div class="okvir">
+      <div class="podnozje__ime" aria-hidden="true" data-ime>skro.z</div>
+      <div class="podnozje__red">
+        <span>© <span data-godina></span> <span data-ime>skro.z</span></span>
+        <div class="podnozje__linkovi"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="sadrzaj.js"></script>
+  <script src="js/sajt.js"></script>
+  <script type="module" src="js/panorama.js"></script>
+</body>
+</html>

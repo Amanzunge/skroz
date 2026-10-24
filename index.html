@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>skro.z</title>
+  <meta name="description" content="skro.z — arhitektonski studio. Projektovanje kuća, stanova i enterijera, 3D prikazi i 360° ture.">
+  <meta property="og:title" content="skro.z">
+  <meta property="og:description" content="Arhitektura i enterijer — od prve skice do ključa u ruci.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="slike/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Roboto:wght@300;400&display=swap">
+  <link rel="stylesheet" href="css/stil.css">
+  <script>
+    try { if (sessionStorage.getItem("skroz-uvod") === "1") document.documentElement.classList.add("bez-uvoda"); } catch (e) {}
+  </script>
+</head>
+<body data-strana="pocetna" id="vrh">
+
+  <div class="uvodnik" aria-hidden="true"><div class="uvodnik__ime"></div></div>
+  <div class="prelaz" aria-hidden="true"></div>
+
+  <!-- ZAGLAVLJE -->
+  <header class="zaglavlje">
+    <div class="okvir zaglavlje__unutra">
+      <a class="logo" href="#vrh" aria-label="skro.z — početna">
+        <span class="logo__ime" data-logo>skro.z</span>
+      </a>
+      <nav class="meni" aria-label="Glavni meni">
+        <a href="#radovi">Radovi</a>
+        <a href="#usluge">Usluge</a>
+        <a href="#o-meni">O meni</a>
+        <a href="#kontakt">Kontakt</a>
+      </nav>
+      <button class="meni-dugme" type="button" aria-expanded="false" aria-controls="mob-meni">
+        <span class="meni-dugme__tekst">Meni</span><span class="meni-dugme__ikona"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mob-meni" id="mob-meni">
+    <nav aria-label="Meni">
+      <a href="#radovi"><span>01</span>Radovi</a>
+      <a href="#usluge"><span>02</span>Usluge</a>
+      <a href="#o-meni"><span>03</span>O meni</a>
+      <a href="#kontakt"><span>04</span>Kontakt</a>
+    </nav>
+    <div class="mob-meni__kontakt"></div>
+  </div>
+
+  <main>
+    <!-- SLAJDER -->
+    <section class="hero" aria-label="Izdvojeni radovi">
+      <div class="hero__slajdovi"></div>
+      <div class="okvir hero__sadrzaj">
+        <h1 class="hero__naslov"><span class="maska"><span>skro.z</span></span></h1>
+        <div class="hero__red">
+          <p class="hero__opis"></p>
+        </div>
+        <div class="hero__dno">
+          <div class="hero__brojac"></div>
+          <div class="hero__trake"></div>
+          <a class="hero__natpis" href="#radovi"></a>
+        </div>
+      </div>
+      <div class="hero__skrol" aria-hidden="true">Skroluj<i></i></div>
+    </section>
+
+    <!-- RADOVI -->
+    <section class="sekcija" id="radovi">
+      <div class="okvir">
+        <div class="sekcija__glava">
+          <span class="oznaka" data-pojavi>Izabrani projekti</span>
+          <h2 class="naslov-sekcije" data-reci>Radovi</h2>
+          <p class="uvod" data-pojavi>Kliknite na projekat da vidite sve fotografije i 360° pogled.</p>
+        </div>
+        <div class="radovi"></div>
+      </div>
+    </section>
+
+    <!-- USLUGE -->
+    <section class="sekcija sekcija--siva" id="usluge">
+      <div class="okvir usluge">
+        <div class="usluge__levo">
+          <span class="oznaka" data-pojavi>Šta radim</span>
+          <h2 class="naslov-sekcije" data-reci>Usluge</h2>
+          <p class="uvod usluge__uvod" data-pojavi></p>
+        </div>
+        <ol class="usluge__lista"></ol>
+      </div>
+    </section>
+
+    <!-- O MENI -->
+    <section class="sekcija" id="o-meni">
+      <div class="okvir o-meni">
+        <span class="oznaka" data-pojavi>O meni</span>
+        <p class="o-meni__istaknuto"></p>
+        <div class="o-meni__tekst" data-pojavi></div>
+      </div>
+    </section>
+
+    <!-- KONTAKT -->
+    <section class="sekcija sekcija--siva" id="kontakt">
+      <div class="okvir">
+        <span class="oznaka" data-pojavi>Kontakt</span>
+        <h2 class="kontakt__naslov" data-reci></h2>
+        <p class="kontakt__tekst" data-pojavi></p>
+        <div class="kontakt__stavke"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PODNOŽJE -->
+  <footer class="podnozje">
+    <div class="okvir">
+      <div class="podnozje__ime" aria-hidden="true" data-ime>skro.z</div>
+      <div class="podnozje__red">
+        <span>© <span data-godina></span> <span data-ime>skro.z</span></span>
+        <div class="podnozje__linkovi"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="sadrzaj.js"></script>
+  <script src="js/sajt.js"></script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+Ovde idu fotografije radova, svaki rad u svom folderu (npr. kuca-novi-sad/01.jpg).
+Vidi UPUTSTVO.md.
