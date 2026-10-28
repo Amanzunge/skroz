@@ -443,28 +443,6 @@
         </div>
       </section>
 
-      ${panorame.length ? `
-      <section class="sekcija pano-sekcija${pozadina()}" id="pano">
-        <div class="okvir">
-          <div class="sekcija__glava">
-            <span class="oznaka" data-pojavi>360° pogled</span>
-            <h2 class="naslov-sekcije" data-reci>Prošetajte kroz prostor</h2>
-            <p class="uvod" data-pojavi>Prevucite mišem ili prstom da se okrenete. ${panorame.length > 1 ? "Ispod izaberite prostoriju." : ""}</p>
-          </div>
-          <div class="pano" data-pojavi>
-            <div class="pano__pregledac" id="pano-pregledac"></div>
-            <div class="pano__savet">${IKONA.ruka}<span>Prevucite da pogledate okolo</span></div>
-          </div>
-          ${panorame.length > 1 ? `<div class="pano__sobe" role="tablist" aria-label="Prostorije">
-            ${panorame.map((p, i) => `
-              <button class="soba${i === 0 ? " je-aktivna" : ""}" type="button" role="tab" aria-selected="${i === 0}" data-soba="${i}">
-                <span class="soba__slika"><img src="${esc(p.slicica || p.slika)}" alt="" loading="lazy"></span>
-                <span class="soba__ime">${esc(p.naziv || "Prostorija " + (i + 1))}</span>
-              </button>`).join("")}
-          </div>` : ""}
-        </div>
-      </section>` : ""}
-
       ${pp ? `
       <section class="sekcija${pozadina()}">
         <div class="okvir">
@@ -501,6 +479,28 @@
         </div>
       </section>
 
+      ${panorame.length ? `
+      <section class="sekcija pano-sekcija${pozadina()}" id="pano">
+        <div class="okvir">
+          <div class="sekcija__glava">
+            <span class="oznaka" data-pojavi>360° pogled</span>
+            <h2 class="naslov-sekcije" data-reci>Prošetajte kroz prostor</h2>
+            <p class="uvod" data-pojavi>Prevucite mišem ili prstom da se okrenete. ${panorame.length > 1 ? "Ispod izaberite prostoriju." : ""}</p>
+          </div>
+          <div class="pano" data-pojavi>
+            <div class="pano__pregledac" id="pano-pregledac"></div>
+            <div class="pano__savet">${IKONA.ruka}<span>Prevucite da pogledate okolo</span></div>
+          </div>
+          ${panorame.length > 1 ? `<div class="pano__sobe" role="tablist" aria-label="Prostorije">
+            ${panorame.map((p, i) => `
+              <button class="soba${i === 0 ? " je-aktivna" : ""}" type="button" role="tab" aria-selected="${i === 0}" data-soba="${i}">
+                <span class="soba__slika"><img src="${esc(p.slicica || p.slika)}" alt="" loading="lazy"></span>
+                <span class="soba__ime">${esc(p.naziv || "Prostorija " + (i + 1))}</span>
+              </button>`).join("")}
+          </div>` : ""}
+        </div>
+      </section>` : ""}
+
       ${sledeci && sledeci.id !== r.id ? `
       <a class="sledeci" href="${linkRada(sledeci.id)}">
         <div class="sledeci__slika"><img src="${esc(sledeci.naslovna)}" alt="" loading="lazy"></div>
@@ -512,10 +512,22 @@
     `;
 
     lightbox(slike, r.naslov);
+    celeSlike();
     prePosle();
     paralaksa($(".rad-hero__slika"));
     pojavi();
     requestAnimationFrame(() => setTimeout(() => document.body.classList.add("spreman"), 60));
+  }
+
+  // uspravne fotografije i dugački crteži se ne seku u pločicama galerije
+  function celeSlike() {
+    $$(".galerija__stavka img").forEach((img) => {
+      const proveri = () => {
+        const odnos = img.naturalWidth / img.naturalHeight;
+        if (odnos && (odnos < 1.15 || odnos > 2.4)) img.classList.add("cela");
+      };
+      img.complete ? proveri() : img.addEventListener("load", proveri, { once: true });
+    });
   }
 
   function prePosle() {
