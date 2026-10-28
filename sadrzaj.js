@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SADRŽAJ SAJTA — skro.z
+   SADRŽAJ SAJTA: skro.z
    --------------------------------------------------------------------------
    Ovo je JEDINI fajl koji treba menjati da biste promenili tekstove,
    slike i radove na sajtu. Detaljno uputstvo je u fajlu UPUTSTVO.md.
@@ -16,7 +16,7 @@ window.SKROZ = {
   /* ---------- OSNOVNO ---------- */
   ime: "skro.z",
   logo: "slike/logo.png",
-  opisPocetna: "Eksterijer i enterijer — od prve ideje do realizacije na terenu.",
+  opisPocetna: "Eksterijer i enterijer, od prve ideje do realizacije na terenu.",
 
   /* ---------- SLAJDER NA POČETNOJ ----------
      Slike se same smenjuju. "rad" je id rada na koji vodi klik (nije obavezno). */
@@ -24,18 +24,18 @@ window.SKROZ = {
   slajder: [
     { slika: "slike/radovi/vikendica-bezdan/naslovna.jpg", naslov: "Vikendica", rad: "vikendica-bezdan" },
     { slika: "slike/radovi/mi-amigo/naslovna.jpg", naslov: "Mi Amigo ZR", rad: "mi-amigo" },
-    { slika: "slike/radovi/porodicna-kuca-karadjordjev-park/naslovna.jpg", naslov: "Porodična kuća", rad: "porodicna-kuca-karadjordjev-park" },
+    { slika: "slike/radovi/porodicna-kuca-karadjordjev-park/naslovna.jpg", naslov: "Porodična kuća 1", rad: "porodicna-kuca-karadjordjev-park" },
     { slika: "slike/radovi/garden-park/naslovna.jpg", naslov: "Garden Park", rad: "garden-park" },
     { slika: "slike/radovi/tobacco-shop/naslovna.jpg", naslov: "Tobacco Shop", rad: "tobacco-shop" },
-    { slika: "slike/radovi/porodicna-kuca-zrenjanin/naslovna.jpg", naslov: "Porodična kuća", rad: "porodicna-kuca-zrenjanin" },
+    { slika: "slike/radovi/porodicna-kuca-zrenjanin/naslovna.jpg", naslov: "Porodična kuća 2", rad: "porodicna-kuca-zrenjanin" },
     { slika: "slike/radovi/ekogradnja/naslovna.jpg", naslov: "Ekogradnja", rad: "ekogradnja" },
   ],
 
   /* ---------- USLUGE ---------- */
   usluge: {
-    uvod: "Od prve ideje do realizacije na terenu — vodimo Vas kroz čitav proces jasno, precizno i bez nepotrebnih komplikacija.",
+    uvod: "Od prve ideje do realizacije na terenu, vodimo Vas kroz čitav proces jasno, precizno i bez nepotrebnih komplikacija.",
     stavke: [
-      { naslov: "Eksterijer", tekst: "3D vizuelizacija sa svim potrebnim detaljima za postojeće i novoprojektovane objekte — fasade, dvorišta, letnjikovce, ograde i uređenje prostora. Jasan uvid u materijale, boje i sve ključne elemente pre početka radova." },
+      { naslov: "Eksterijer", tekst: "3D vizuelizacija sa svim potrebnim detaljima za postojeće i novoprojektovane objekte: fasade, dvorišta, letnjikovce, ograde i uređenje prostora. Jasan uvid u materijale, boje i sve ključne elemente pre početka radova." },
       { naslov: "Enterijer", tekst: "3D vizuelizacija sa svim potrebnim detaljima, uključujući raspored, izbor materijala, rasvetu i radioničke crteže nameštaja po meri za stanove, kuće i poslovne prostore." },
       { naslov: "Terenska koordinacija i priprema", tekst: "Izrada preciznih dimenzija i tehničkih specifikacija za majstore, uz podršku i konsultacije na terenu kako bi se zamisao u potpunosti prenela u realnost." },
       { naslov: "Projekti za nove objekte", tekst: "Planiranje i razrada idejnih koncepata. Za potrebe dobijanja građevinske dozvole i izrade zvanične projektne dokumentacije, sarađujemo sa licenciranim partnerima i mrežom projektanata u zavisnosti od namene i lokacije objekta." },
@@ -45,7 +45,7 @@ window.SKROZ = {
   /* ---------- O MENI ---------- */
   oMeni: {
     slika: "slike/o-meni.jpg",
-    istaknuto: "Verujem da dobar projekat počinje razgovorom — kroz koji zajedno definišemo Vašu viziju, želje i realne mogućnosti prostora.",
+    istaknuto: "Verujem da dobar projekat počinje razgovorom, kroz koji zajedno definišemo Vašu viziju, želje i realne mogućnosti prostora.",
     tekst: [
       "Mi spajamo 3D vizuelizaciju i izvođačku praksu u kreiranju Vašeg prostora. Svakom projektu se pristupa individualno, uz potpunu posvećenost funkcionalnosti, estetici i izvodljivosti u praksi. Projekat se vodi od prve ideje do završnih detalja, sa jasnim ciljem da dobijete rešenje koje je i lepo i ostvarivo na terenu.",
       "Prednost dajemo jednostavnim rešenjima, funkcionalnosti i kvalitetnim materijalima. Umesto prolaznih trendova, fokus je na vanvremenskom dizajnu i kreiranju prostora koji uspešno spaja estetsku vrednost, trajnost i svakodnevnu praktičnost.",
@@ -74,13 +74,13 @@ window.SKROZ = {
   /* ---------- RADOVI ----------
      Svaki rad je jedan blok između { }. Da dodate novi rad, kopirajte ceo
      blok, promenite podatke i pazite da "id" bude jedinstven (bez razmaka
-     i bez naših slova — npr. "kuca-novi-sad").
+     i bez naših slova, npr. "kuca-novi-sad").
 
-     naslovna   – slika koja se vidi na početnoj i na vrhu stranice rada
-     opis       – tekst na stranici rada (svaki pasus u svojim navodnicima)
-     slike      – sve slike koje se vide kad se otvori rad
-     panorame   – 360° slike (2:1, npr. 6144x3072 px). Može i prazno: []
-     preIPosle  – (nije obavezno) dve slike za poređenje „pre“ i „posle“    */
+     naslovna   : slika koja se vidi na početnoj i na vrhu stranice rada
+     opis       : tekst na stranici rada (svaki pasus u svojim navodnicima)
+     slike      : sve slike koje se vide kad se otvori rad
+     panorame   : 360° slike (2:1, npr. 6144x3072 px). Može i prazno: []
+     preIPosle  : (nije obavezno) dve slike za poređenje „pre“ i „posle“    */
   radovi: [
     {
       id: "vikendica-bezdan",
@@ -143,7 +143,7 @@ window.SKROZ = {
     },
     {
       id: "porodicna-kuca-karadjordjev-park",
-      naslov: "Porodična kuća",
+      naslov: "Porodična kuća 1",
       lokacija: "Zrenjanin, Karađorđev Park",
       datum: "2025",
       naslovna: "slike/radovi/porodicna-kuca-karadjordjev-park/naslovna.jpg",
@@ -208,7 +208,7 @@ window.SKROZ = {
     },
     {
       id: "porodicna-kuca-zrenjanin",
-      naslov: "Porodična kuća",
+      naslov: "Porodična kuća 2",
       lokacija: "Zrenjanin",
       datum: "2024",
       naslovna: "slike/radovi/porodicna-kuca-zrenjanin/naslovna.jpg",

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   skro.z — 360° panorama (Photo Sphere Viewer)
+   skro.z: 360° panorama (Photo Sphere Viewer)
    Uvodna animacija "mala planeta", automatsko okretanje, izbor prostorija.
    ========================================================================== */
 import { Viewer, utils } from "@photo-sphere-viewer/core";
@@ -90,7 +90,7 @@ function pokreni(panorame) {
     kutija.addEventListener("pointerdown", sakrijSavet, { passive: true });
   }
 
-  // "Mala planeta" — slika se razmota iz kugle u normalan pogled
+  // "Mala planeta": slika se razmota iz kugle u normalan pogled
   function uvod() {
     if (uvodPusten || !spreman) return;
     uvodPusten = true;
@@ -138,7 +138,7 @@ function pokreni(panorame) {
     });
     if (!viewer) return napravi();
     if (!uvodPusten) {
-      // korisnik je kliknuo pre uvoda — preskoči uvod
+      // korisnik je kliknuo pre uvoda, preskoči uvod
       uvodPusten = true;
       viewer.setOptions({ mousemove: true, fisheye: 0, maxFov: KRAJ.maxFov });
       okvir.classList.add("uvod-gotov");

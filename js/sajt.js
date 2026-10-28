@@ -1,5 +1,5 @@
 /* ==========================================================================
-   skro.z — logika sajta
+   skro.z: logika sajta
    Sadržaj se menja u fajlu sadrzaj.js, ovde ne treba ništa dirati.
    ========================================================================== */
 (() => {
@@ -23,7 +23,7 @@
 
   const nadjiRad = (id) => S.radovi.find((r) => r.id === id);
   const linkRada = (id) => `rad.html?id=${encodeURIComponent(id)}`;
-  const metaRada = (r) => [r.lokacija, r.datum].filter(Boolean).map(esc).join(" — ");
+  const metaRada = (r) => [r.lokacija, r.datum].filter(Boolean).map(esc).join(" · ");
   const broj = (i) => String(i + 1).padStart(2, "0");
 
   /* ---------- Zajedničko: logo, meni, kontakt, podnožje ---------- */
@@ -189,7 +189,7 @@
       natpis.classList.add("menja");
       setTimeout(() => {
         const rad = s.rad && nadjiRad(s.rad);
-        natpis.innerHTML = `<span>${esc(s.naslov || "")}${rad && rad.lokacija ? " — " + esc(rad.lokacija.split(",")[0]) : ""}</span>${rad ? IKONA.strelica : ""}`;
+        natpis.innerHTML = `<span>${esc(s.naslov || "")}${rad && rad.lokacija ? " · " + esc(rad.lokacija.split(",")[0]) : ""}</span>${rad ? IKONA.strelica : ""}`;
         natpis.setAttribute("href", rad ? linkRada(rad.id) : "#radovi");
         natpis.classList.remove("menja");
       }, 300);
@@ -474,8 +474,8 @@
             <p class="uvod" data-pojavi>Pomerajte liniju levo-desno da uporedite.</p>
           </div>
           <div class="pre-posle" data-pojavi>
-            <img src="${esc(pp.posle)}" alt="${esc(r.naslov)} — posle" loading="lazy">
-            <img class="pre-posle__pre" src="${esc(pp.pre)}" alt="${esc(r.naslov)} — pre" loading="lazy">
+            <img src="${esc(pp.posle)}" alt="${esc(r.naslov)}, posle" loading="lazy">
+            <img class="pre-posle__pre" src="${esc(pp.pre)}" alt="${esc(r.naslov)}, pre" loading="lazy">
             <span class="pre-posle__oznaka pre-posle__oznaka--pre">Pre</span>
             <span class="pre-posle__oznaka pre-posle__oznaka--posle">Posle</span>
             <span class="pre-posle__linija"></span>
@@ -495,7 +495,7 @@
           <div class="galerija">
             ${slike.map((s, i) => `
               <button class="galerija__stavka" type="button" data-pojavi="slika" data-indeks="${i}" style="--kasni:${(i % 3 === 2 ? 0.12 : 0)}s" aria-label="Uvećaj sliku ${i + 1}">
-                <span class="otkrij" style="display:block;width:100%;height:100%"><img src="${esc(s)}" alt="${esc(r.naslov)} — slika ${i + 1}" loading="lazy"></span>
+                <span class="otkrij" style="display:block;width:100%;height:100%"><img src="${esc(s)}" alt="${esc(r.naslov)}, slika ${i + 1}" loading="lazy"></span>
               </button>`).join("")}
           </div>
         </div>
@@ -577,13 +577,13 @@
       brojac.textContent = `${broj(i)} / ${broj(slike.length - 1)}`;
       if (odmah) {
         img.src = slike[i];
-        img.alt = `${naslov} — slika ${i + 1}`;
+        img.alt = `${naslov}, slika ${i + 1}`;
         return;
       }
       img.classList.add("menja");
       setTimeout(() => {
         img.src = slike[i];
-        img.alt = `${naslov} — slika ${i + 1}`;
+        img.alt = `${naslov}, slika ${i + 1}`;
         const pokazi = () => img.classList.remove("menja");
         img.complete ? pokazi() : (img.onload = pokazi);
       }, 220);
