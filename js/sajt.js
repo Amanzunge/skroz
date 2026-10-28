@@ -17,6 +17,7 @@
     levo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M15 4 7 12l8 8"/></svg>',
     desno: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="m9 4 8 8-8 8"/></svg>',
     pano: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4.2"/><path d="M12 2c3 2.6 3 17.4 0 20M12 2c-3 2.6-3 17.4 0 20"/></svg>',
+    poredi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M9 6 3 12l6 6M15 6l6 6-6 6"/></svg>',
     ruka: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 26V11.5a3 3 0 0 1 6 0V24"/><path d="M25 22.5v-2a3 3 0 0 1 6 0V25"/><path d="M31 23a3 3 0 0 1 6 0v6.5C37 37 32 42 25.5 42h-1c-4.4 0-7.2-1.7-9.6-4.6L9.6 31a3 3 0 0 1 4.3-4.2L19 31"/><path d="M6 12h7M8.5 9.5 6 12l2.5 2.5M42 12h-7m4.5-2.5L42 12l-2.5 2.5"/></svg>',
   };
 
@@ -28,9 +29,6 @@
   /* ---------- Zajedničko: logo, meni, kontakt, podnožje ---------- */
 
   function popuniZajednicko() {
-    const ime = esc(S.ime);
-    const imeSaTackom = ime.replace(".", "<b>.</b>");
-    $$("[data-logo]").forEach((el) => (el.innerHTML = imeSaTackom));
     $$("[data-ime]").forEach((el) => (el.textContent = S.ime));
     $$("[data-godina]").forEach((el) => (el.textContent = new Date().getFullYear()));
 
@@ -191,7 +189,7 @@
       natpis.classList.add("menja");
       setTimeout(() => {
         const rad = s.rad && nadjiRad(s.rad);
-        natpis.innerHTML = `<span>${esc(s.naslov || "")}${rad ? " — " + esc(rad.lokacija) : ""}</span>${rad ? IKONA.strelica : ""}`;
+        natpis.innerHTML = `<span>${esc(s.naslov || "")}${rad && rad.lokacija ? " — " + esc(rad.lokacija.split(",")[0]) : ""}</span>${rad ? IKONA.strelica : ""}`;
         natpis.setAttribute("href", rad ? linkRada(rad.id) : "#radovi");
         natpis.classList.remove("menja");
       }, 300);
@@ -300,6 +298,9 @@
   }
 
   function oMeni() {
+    const figura = $(".o-meni__slika");
+    if (S.oMeni.slika) $("img", figura).src = S.oMeni.slika;
+    else figura.remove();
     const ist = $(".o-meni__istaknuto");
     const reci = S.oMeni.istaknuto.trim().split(/\s+/);
     ist.setAttribute("aria-label", S.oMeni.istaknuto);
@@ -335,11 +336,20 @@
       k.telefon && ["Telefon", `<a href="tel:${esc(k.telefon.replace(/[^\d+]/g, ""))}">${esc(k.telefon)}</a>`],
       k.email && ["Email", `<a href="mailto:${esc(k.email)}">${esc(k.email)}</a>`],
       k.adresa && ["Studio", `<p>${esc(k.adresa)}</p>`],
-      k.instagram && ["Instagram", `<a href="${esc(k.instagram)}" target="_blank" rel="noopener">Pratite rad</a>`],
+      k.instagram && ["Instagram", `<a href="${esc(k.instagram)}" target="_blank" rel="noopener">${esc(k.instagramIme || "Instagram")}</a>`],
     ].filter(Boolean);
     $(".kontakt__stavke").innerHTML = stavke
       .map(([naziv, html], i) => `<div class="kontakt__stavka" data-pojavi style="--kasni:${i * 0.08}s"><span>${naziv}</span>${html}</div>`)
       .join("");
+    const f = S.firma;
+    const firma = $(".kontakt__firma");
+    if (f && f.naziv) {
+      firma.innerHTML = [
+        `<span>${esc(f.naziv)}</span>`,
+        f.pib && `<span>PIB: ${esc(f.pib)}</span>`,
+        f.mb && `<span>MB: ${esc(f.mb)}</span>`,
+      ].filter(Boolean).join("");
+    } else firma.remove();
   }
 
   // Označava u meniju sekciju koja je trenutno na ekranu
@@ -365,18 +375,14 @@
       return posle();
     }
     try { sessionStorage.setItem("skroz-uvod", "1"); } catch (e) {}
-    u.querySelector(".uvodnik__ime").innerHTML = [...S.ime]
-      .map((c, i) => `<span style="animation-delay:${0.08 + i * 0.06}s">${esc(c)}</span>`)
-      .join("");
     setTimeout(() => {
       u.classList.add("je-gotov");
       setTimeout(posle, 350);
       setTimeout(() => u.remove(), 1100);
-    }, 1350);
+    }, 1800);
   }
 
   function pocetna() {
-    $(".hero__naslov .maska > span").textContent = S.ime;
     $(".hero__opis").textContent = S.opisPocetna;
     const kreniSlajder = slajder();
     radovi();
@@ -415,6 +421,11 @@
     const sledeci = S.radovi[(indeks + 1) % S.radovi.length];
     const slike = r.slike && r.slike.length ? r.slike : [r.naslovna];
     const panorame = r.panorame || [];
+    const opis = Array.isArray(r.opis) ? r.opis : String(r.opis || "").split(/\n+/);
+    const pasusi = opis.map((t) => t.trim()).filter(Boolean);
+    const pp = r.preIPosle && r.preIPosle.pre && r.preIPosle.posle ? r.preIPosle : null;
+    let brojSekcija = 0;
+    const pozadina = () => (brojSekcija++ % 2 ? " sekcija--siva" : "");
     document.title = `${r.naslov} | ${S.ime}`;
     window.SKROZ_RAD = r;
 
@@ -427,15 +438,13 @@
           <div class="rad-hero__meta">
             ${r.lokacija ? `<div><span>Lokacija</span><b>${esc(r.lokacija)}</b></div>` : ""}
             ${r.datum ? `<div><span>Datum</span><b>${esc(r.datum)}</b></div>` : ""}
-            ${panorame.length ? `<div><a href="#pano"><span>360° pogled</span><b>${panorame.length === 1 ? "1 prostorija" : panorame.length + " prostorije"}</b></a></div>` : ""}
+            ${pasusi.length ? `<div class="rad-hero__opis"><span>Opis</span>${pasusi.map((t) => `<p>${esc(t)}</p>`).join("")}</div>` : ""}
           </div>
         </div>
       </section>
 
-      ${r.opis ? `<section class="sekcija" style="padding-bottom:0"><div class="okvir"><p class="rad-opis" data-pojavi>${esc(r.opis)}</p></div></section>` : ""}
-
       ${panorame.length ? `
-      <section class="sekcija pano-sekcija" id="pano">
+      <section class="sekcija pano-sekcija${pozadina()}" id="pano">
         <div class="okvir">
           <div class="sekcija__glava">
             <span class="oznaka" data-pojavi>360° pogled</span>
@@ -456,7 +465,27 @@
         </div>
       </section>` : ""}
 
-      <section class="sekcija${panorame.length ? " sekcija--siva" : ""}">
+      ${pp ? `
+      <section class="sekcija${pozadina()}">
+        <div class="okvir">
+          <div class="sekcija__glava">
+            <span class="oznaka" data-pojavi>Transformacija</span>
+            <h2 class="naslov-sekcije" data-reci>Pre i posle</h2>
+            <p class="uvod" data-pojavi>Pomerajte liniju levo-desno da uporedite.</p>
+          </div>
+          <div class="pre-posle" data-pojavi>
+            <img src="${esc(pp.posle)}" alt="${esc(r.naslov)} — posle" loading="lazy">
+            <img class="pre-posle__pre" src="${esc(pp.pre)}" alt="${esc(r.naslov)} — pre" loading="lazy">
+            <span class="pre-posle__oznaka pre-posle__oznaka--pre">Pre</span>
+            <span class="pre-posle__oznaka pre-posle__oznaka--posle">Posle</span>
+            <span class="pre-posle__linija"></span>
+            <span class="pre-posle__rucka">${IKONA.poredi}</span>
+            <input type="range" min="0" max="100" step="0.1" value="50" aria-label="Poređenje: pre i posle">
+          </div>
+        </div>
+      </section>` : ""}
+
+      <section class="sekcija${pozadina()}">
         <div class="okvir">
           <div class="sekcija__glava">
             <span class="oznaka" data-pojavi>Galerija</span>
@@ -483,9 +512,28 @@
     `;
 
     lightbox(slike, r.naslov);
+    prePosle();
     paralaksa($(".rad-hero__slika"));
     pojavi();
     requestAnimationFrame(() => setTimeout(() => document.body.classList.add("spreman"), 60));
+  }
+
+  function prePosle() {
+    const el = $(".pre-posle");
+    if (!el) return;
+    const klizac = $("input", el);
+    klizac.addEventListener("input", () => {
+      el.classList.remove("nagovestaj");
+      el.style.setProperty("--x", klizac.value + "%");
+    });
+    el.addEventListener("animationend", () => el.classList.remove("nagovestaj"));
+    // jednom pomeri liniju levo-desno da se vidi da može da se vuče
+    if (smanjenPokret || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(([u], io) => {
+      if (!u.isIntersecting) return;
+      el.classList.add("nagovestaj");
+      io.disconnect();
+    }, { threshold: 0.6 }).observe(el);
   }
 
   function paralaksa(el) {

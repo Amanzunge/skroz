@@ -6,16 +6,16 @@ Sajt čine obični fajlovi (HTML, CSS, JS), bez baze i bez instalacije.
 ```
 skroz/
 ├── index.html        početna (slajder, radovi, usluge, o meni, kontakt)
-├── rad.html          stranica jednog rada (galerija + 360°)
+├── rad.html          stranica jednog rada (opis, 360°, pre/posle, galerija)
 ├── sadrzaj.js        ← SVI TEKSTOVI, SLIKE I RADOVI
 ├── css/stil.css      izgled
 ├── js/sajt.js        animacije, slajder, galerija
 ├── js/panorama.js    360° pregledač
-└── slike/            ovde idu vaše fotografije
+└── slike/            fotografije (logo.png, o-meni.jpg, radovi/…)
 ```
 
-> Trenutne slike i tekstovi su **primeri**. Slike su sa Unsplash-a i Poly Haven-a
-> (besplatne) i treba ih zameniti pravim fotografijama projekata.
+- **Logo** je `slike/logo.png` (beli potpis na providnoj pozadini). Novi logo = zamenite taj fajl.
+- **Ikonica u kartici pregledača:** `slike/favicon.png` i `slike/apple-touch-icon.png`.
 
 ---
 
@@ -32,18 +32,28 @@ skroz/
   naslov: "Kuća u Novom Sadu",
   lokacija: "Novi Sad",
   datum: "2026",                       // može i "mart 2026"
-  naslovna: "slike/radovi/kuca-novi-sad/01.jpg",
-  opis: "",                            // kratak tekst, nije obavezno
+  naslovna: "slike/radovi/kuca-novi-sad/naslovna.jpg",
+  opis: [                              // svaki pasus u svojim navodnicima
+    "Prvi pasus opisa.",
+    "Drugi pasus opisa.",
+  ],
   slike: [
     "slike/radovi/kuca-novi-sad/01.jpg",
     "slike/radovi/kuca-novi-sad/02.jpg",
     "slike/radovi/kuca-novi-sad/03.jpg",
   ],
   panorame: [
-    { naziv: "Dnevna soba", slika: "slike/radovi/kuca-novi-sad/360-dnevna.jpg" },
-    { naziv: "Kuhinja",     slika: "slike/radovi/kuca-novi-sad/360-kuhinja.jpg" },
+    { naziv: "Pogled 1", slika: "slike/radovi/kuca-novi-sad/panorame/01.jpg", slicica: "slike/radovi/kuca-novi-sad/panorame/01-mala.jpg" },
+    { naziv: "Pogled 2", slika: "slike/radovi/kuca-novi-sad/panorame/02.jpg", slicica: "slike/radovi/kuca-novi-sad/panorame/02-mala.jpg" },
   ],
 },
+```
+
+Za rekonstrukcije može i poređenje „pre / posle“ (klizač koji se vuče levo-desno),
+dve slike istog kadra:
+
+```js
+  preIPosle: { pre: "slike/radovi/kuca-novi-sad/pre.jpg", posle: "slike/radovi/kuca-novi-sad/posle.jpg" },
 ```
 
 - Redosled u fajlu = redosled na sajtu (prvi blok je prvi rad).
@@ -63,11 +73,12 @@ Brzina: `slajderSekundi: 5` (broj sekundi po slici).
 
 ## 3. 360° panorame
 
-- Format: **2:1 „equirectangular“** JPG (npr. 6000 × 3000 px).
+- Format: **2:1 „equirectangular“** JPG — na sajtu su 6144 × 3072 px (originali 8192 × 4096 su smanjeni).
 - Takve slike daju svi programi za render: **Lumion, Enscape, Twinmotion, V-Ray, Corona, D5 Render**
   (opcija „360° panorama“ / „Panorama“ / „Spherical“), kao i 360° kamere (Insta360, Ricoh Theta).
-- Preporuka: do ~5 MB po panorami (šira od 8000 px nije potrebna).
-- Opciono, za brže sličice prostorija: `slicica: "slike/.../360-dnevna-mala.jpg"` (manja slika, npr. 640 × 320).
+- Preporuka: do ~5 MB po panorami (originali od 15–30 MB su prespori za telefon).
+- `slicica` je mala verzija iste panorame (npr. 480 × 240) za dugmiće prostorija ispod pregledača.
+- `naziv` je natpis ispod sličice — slobodno upišite npr. "Dnevna soba" umesto "Pogled 1".
 
 Šta posetilac vidi: panorama se „razmota“ iz male planete, polako se sama okreće,
 može da se vuče mišem/prstom, zumira (Ctrl + točkić), otvara preko celog ekrana,
@@ -75,7 +86,8 @@ a ispod su sličice prostorija za prelazak iz sobe u sobu.
 
 ## 4. Veličina fotografija
 
-- Široke ~2000 px, JPG kvalitet ~80% → oko 300–600 KB po slici.
+- Široke ~2000 px, JPG kvalitet ~80% → oko 300–600 KB po slici
+  (PNG renderi od 3–9 MB su previše za sajt).
 - Za smanjivanje: besplatno na <https://squoosh.app> ili <https://tinypng.com>.
 
 ## 5. Tekstovi
