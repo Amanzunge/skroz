@@ -19,7 +19,7 @@ DOZVOLJENI = "https://skroz.rs,https://www.skroz.rs,http://localhost:5173"
 KOREN = "SKROZ INVESTITORI"
 # Microsoft prijava ("common" = lični i poslovni nalozi)
 MS_TENANT = "common"
-MS_KLIJENT = ""
+MS_KLIJENT = "b12d17ba-3f2a-417d-b39b-53fb2b85b861"
 
 # Tajne (ne upisuju se ovde, već komandom "npx wrangler secret put IME"):
 #   ADMIN_KLJUC  – ključ za Zoranovu stranicu za upravljanje
