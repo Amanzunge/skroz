@@ -4,13 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>skro.z</title>
-  <meta name="description" content="skro.z: 3D vizuelizacija eksterijera i enterijera, terenska koordinacija i projekti za nove objekte. Novi Bečej, Zrenjanin.">
+  <meta name="description" data-t="meta.opisPocetna" content="skro.z: 3D vizuelizacija eksterijera i enterijera, terenska koordinacija i projekti za nove objekte. Novi Bečej, Zrenjanin.">
   <meta property="og:title" content="skro.z">
   <meta property="og:description" content="Eksterijer i enterijer, od prve ideje do realizacije na terenu.">
   <meta property="og:image" content="https://skroz.rs/slike/radovi/vikendica-bezdan/naslovna.jpg">
   <meta property="og:url" content="https://skroz.rs/">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#000000">
+  <link rel="alternate" hreflang="sr" href="https://skroz.rs/">
+  <link rel="alternate" hreflang="en" href="https://skroz.rs/?lang=en">
   <link rel="icon" href="slike/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="slike/apple-touch-icon.png">
 
@@ -30,34 +32,38 @@
   <!-- ZAGLAVLJE -->
   <header class="zaglavlje">
     <div class="okvir zaglavlje__unutra">
-      <a class="logo" href="#vrh" aria-label="skro.z, početna">
+      <a class="logo" href="#vrh" aria-label="skro.z, početna" data-t-aria="logo.pocetna">
         <img class="logo__slika" src="slike/logo.png" alt="skro.z" width="1000" height="588">
       </a>
-      <nav class="meni" aria-label="Glavni meni">
-        <a href="#radovi">Radovi</a>
-        <a href="#usluge">Usluge</a>
-        <a href="#o-meni">O meni</a>
-        <a href="#kontakt">Kontakt</a>
+      <nav class="meni" aria-label="Glavni meni" data-t-aria="meni.glavni">
+        <a href="#radovi" data-t="meni.radovi">Radovi</a>
+        <a href="#usluge" data-t="meni.usluge">Usluge</a>
+        <a href="#o-meni" data-t="meni.oMeni">O meni</a>
+        <a href="#kontakt" data-t="meni.kontakt">Kontakt</a>
       </nav>
+      <div class="jezik" role="group" aria-label="Jezik" data-t-aria="jezik.izbor">
+        <a data-jezik="sr" href="?lang=sr" hreflang="sr" lang="sr">SR</a>
+        <a data-jezik="en" href="?lang=en" hreflang="en" lang="en">EN</a>
+      </div>
       <button class="meni-dugme" type="button" aria-expanded="false" aria-controls="mob-meni">
-        <span class="meni-dugme__tekst">Meni</span><span class="meni-dugme__ikona"></span>
+        <span class="meni-dugme__tekst" data-t="meni.dugme">Meni</span><span class="meni-dugme__ikona"></span>
       </button>
     </div>
   </header>
 
   <div class="mob-meni" id="mob-meni">
-    <nav aria-label="Meni">
-      <a href="#radovi"><span>01</span>Radovi</a>
-      <a href="#usluge"><span>02</span>Usluge</a>
-      <a href="#o-meni"><span>03</span>O meni</a>
-      <a href="#kontakt"><span>04</span>Kontakt</a>
+    <nav aria-label="Meni" data-t-aria="meni.mob">
+      <a href="#radovi"><span>01</span><i data-t="meni.radovi">Radovi</i></a>
+      <a href="#usluge"><span>02</span><i data-t="meni.usluge">Usluge</i></a>
+      <a href="#o-meni"><span>03</span><i data-t="meni.oMeni">O meni</i></a>
+      <a href="#kontakt"><span>04</span><i data-t="meni.kontakt">Kontakt</i></a>
     </nav>
     <div class="mob-meni__kontakt"></div>
   </div>
 
   <main>
     <!-- SLAJDER -->
-    <section class="hero" aria-label="Izdvojeni radovi">
+    <section class="hero" aria-label="Izdvojeni radovi" data-t-aria="hero.aria">
       <div class="hero__slajdovi"></div>
       <div class="okvir hero__sadrzaj">
         <h1 class="hero__naslov"><span class="skriveno">skro.z</span><img class="hero__logo" src="slike/logo.png" alt="" width="1000" height="588"></h1>
@@ -70,16 +76,16 @@
           <a class="hero__natpis" href="#radovi"></a>
         </div>
       </div>
-      <div class="hero__skrol" aria-hidden="true">Skroluj<i></i></div>
+      <div class="hero__skrol" aria-hidden="true"><span data-t="hero.skroluj">Skroluj</span><i></i></div>
     </section>
 
     <!-- RADOVI -->
     <section class="sekcija" id="radovi">
       <div class="okvir">
         <div class="sekcija__glava">
-          <span class="oznaka" data-pojavi>Izabrani projekti</span>
-          <h2 class="naslov-sekcije" data-reci>Radovi</h2>
-          <p class="uvod" data-pojavi>Kliknite na projekat da vidite sve fotografije i 360° pogled.</p>
+          <span class="oznaka" data-pojavi data-t="radovi.oznaka">Izabrani projekti</span>
+          <h2 class="naslov-sekcije" data-reci data-t="radovi.naslov">Radovi</h2>
+          <p class="uvod" data-pojavi data-t="radovi.uvod">Kliknite na projekat da vidite sve fotografije i 360° pogled.</p>
         </div>
         <div class="radovi"></div>
       </div>
@@ -89,8 +95,8 @@
     <section class="sekcija sekcija--siva" id="usluge">
       <div class="okvir usluge">
         <div class="usluge__levo">
-          <span class="oznaka" data-pojavi>Šta radimo</span>
-          <h2 class="naslov-sekcije" data-reci>Usluge</h2>
+          <span class="oznaka" data-pojavi data-t="usluge.oznaka">Šta radimo</span>
+          <h2 class="naslov-sekcije" data-reci data-t="usluge.naslov">Usluge</h2>
           <p class="uvod usluge__uvod" data-pojavi></p>
         </div>
         <ol class="usluge__lista"></ol>
@@ -102,7 +108,7 @@
       <div class="okvir o-meni">
         <figure class="o-meni__slika" data-pojavi="slika"><div class="otkrij"><img alt="Zoran Skrofanov" loading="lazy"></div></figure>
         <div class="o-meni__sadrzaj">
-          <span class="oznaka" data-pojavi>O meni</span>
+          <span class="oznaka" data-pojavi data-t="oMeni.oznaka">O meni</span>
           <p class="o-meni__istaknuto"></p>
           <div class="o-meni__tekst" data-pojavi></div>
         </div>
@@ -112,7 +118,7 @@
     <!-- KONTAKT -->
     <section class="sekcija sekcija--siva" id="kontakt">
       <div class="okvir">
-        <span class="oznaka" data-pojavi>Kontakt</span>
+        <span class="oznaka" data-pojavi data-t="kontakt.oznaka">Kontakt</span>
         <h2 class="kontakt__naslov" data-reci></h2>
         <p class="kontakt__tekst" data-pojavi></p>
         <div class="kontakt__stavke"></div>
@@ -133,6 +139,7 @@
   </footer>
 
   <script src="sadrzaj.js"></script>
+  <script src="js/jezik.js"></script>
   <script src="js/sajt.js"></script>
 </body>
 </html>

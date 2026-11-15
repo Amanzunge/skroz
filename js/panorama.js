@@ -7,6 +7,35 @@ import { AutorotatePlugin } from "@photo-sphere-viewer/autorotate-plugin";
 import { GyroscopePlugin } from "@photo-sphere-viewer/gyroscope-plugin";
 
 const rad = window.SKROZ_RAD;
+const en = !!(window.SKROZ_JEZIK && window.SKROZ_JEZIK.en);
+const naziv = (p, i) => (window.SKROZ_NAZIV_POGLEDA ? window.SKROZ_NAZIV_POGLEDA(p, i) : p.naziv || "");
+const NATPISI = en
+  ? {
+      loadingTxt: "Loading 360°",
+      lang: {
+        autorotate: "Auto-rotate",
+        gyroscope: "Move your phone",
+        ctrlZoom: "Hold Ctrl and scroll to zoom",
+        webglError: "Your browser does not support the 360° view",
+      },
+    }
+  : {
+      loadingTxt: "Učitavanje 360°",
+      lang: {
+        zoom: "Zum",
+        zoomOut: "Udalji",
+        zoomIn: "Približi",
+        fullscreen: "Ceo ekran",
+        autorotate: "Automatsko okretanje",
+        gyroscope: "Pomeraj telefon",
+        loading: "Učitavanje…",
+        close: "Zatvori",
+        twoFingers: "Koristite dva prsta za pomeranje",
+        ctrlZoom: "Držite Ctrl i skrolujte za zum",
+        loadError: "Panorama ne može da se učita",
+        webglError: "Vaš pregledač ne podržava 360° prikaz",
+      },
+    };
 const kutija = document.getElementById("pano-pregledac");
 
 if (rad && kutija && rad.panorame && rad.panorame.length) pokreni(rad.panorame);
@@ -34,8 +63,8 @@ function pokreni(panorame) {
     viewer = new Viewer({
       container: kutija,
       panorama: panorame[trenutna].slika,
-      caption: panorame[trenutna].naziv || "",
-      loadingTxt: "Učitavanje 360°",
+      caption: naziv(panorame[trenutna], trenutna),
+      loadingTxt: NATPISI.loadingTxt,
       defaultPitch: pocetak.pitch,
       defaultYaw: pocetak.yaw,
       defaultZoomLvl: pocetak.zoom,
@@ -49,20 +78,7 @@ function pokreni(panorame) {
       navbar: naTelefonu
         ? ["autorotate", "caption", "gyroscope", "fullscreen"]
         : ["zoom", "autorotate", "caption", "fullscreen"],
-      lang: {
-        zoom: "Zum",
-        zoomOut: "Udalji",
-        zoomIn: "Približi",
-        fullscreen: "Ceo ekran",
-        autorotate: "Automatsko okretanje",
-        gyroscope: "Pomeraj telefon",
-        loading: "Učitavanje…",
-        close: "Zatvori",
-        twoFingers: "Koristite dva prsta za pomeranje",
-        ctrlZoom: "Držite Ctrl i skrolujte za zum",
-        loadError: "Panorama ne može da se učita",
-        webglError: "Vaš pregledač ne podržava 360° prikaz",
-      },
+      lang: NATPISI.lang,
       plugins: [
         [AutorotatePlugin, {
           autostartDelay: null,
@@ -146,7 +162,7 @@ function pokreni(panorame) {
     const okrece = okretanje.isEnabled();
     viewer
       .setPanorama(panorame[i].slika, {
-        caption: panorame[i].naziv || "",
+        caption: naziv(panorame[i], i),
         position: { yaw: KRAJ.yaw, pitch: KRAJ.pitch },
         zoom: KRAJ.zoom,
         transition: { speed: 1500, rotation: true, effect: "fade" },

@@ -60,6 +60,17 @@ dve slike istog kadra:
 - Ako rad nema 360° slike, ostavite `panorame: [],`
 - Rad se otvara na adresi `rad.html?id=kuca-novi-sad`.
 
+## Engleska verzija
+
+Sajt ima prekidač **SR / EN** u zaglavlju. Izbor se pamti, a engleska adresa je
+`https://skroz.rs/?lang=en`.
+
+- Svaki tekst u `sadrzaj.js` ima engleski par sa nastavkom `_en` odmah ispod:
+  `naslov` → `naslov_en`, `opis` → `opis_en`, `lokacija` → `lokacija_en` (samo kad se razlikuje).
+- Kad dodajete novi rad, dodajte i `naslov_en` i `opis_en`. Ako ih nema, na engleskoj
+  verziji se prikazuje srpski tekst.
+- Natpisi sajta (meni, dugmad, naslovi sekcija) su u `js/jezik.js`.
+
 ## 2. Slajder na početnoj
 
 U `sadrzaj.js` deo `slajder: [ … ]` — svaka stavka je jedna slika:

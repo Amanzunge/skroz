@@ -154,7 +154,7 @@ h1, h2, h3, p { margin: 0; }
   gap: 24px;
 }
 
-.logo { display: inline-flex; align-items: center; }
+.logo { display: inline-flex; align-items: center; margin-right: auto; }
 .logo__slika {
   width: auto;
   height: 58px;
@@ -192,6 +192,27 @@ h1, h2, h3, p { margin: 0; }
 .meni a.je-aktivan { color: var(--bela); }
 .meni a:hover::after,
 .meni a.je-aktivan::after { transform: scaleX(1); transform-origin: left; }
+
+/* prekidač jezika SR / EN */
+.jezik {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: clamp(14px, 2vw, 28px);
+  border-left: 1px solid var(--linija);
+}
+.jezik a {
+  padding: 8px 6px;
+  font-family: var(--f-naslov);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--tekst-3);
+  transition: color 0.3s ease;
+}
+.jezik a:hover,
+.jezik a.je-aktivan { color: var(--bela); }
+.jezik a.je-aktivan { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
 
 .meni-dugme {
   display: none;
@@ -258,6 +279,7 @@ h1, h2, h3, p { margin: 0; }
   transform: translateY(30px);
   transition: opacity 0.6s var(--ease), transform 0.8s var(--ease);
 }
+.mob-meni nav a i { font-style: normal; }
 .mob-meni nav a span {
   font-size: 0.75rem;
   font-weight: 400;

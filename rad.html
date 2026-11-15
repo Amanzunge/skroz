@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rad | skro.z</title>
-  <meta name="description" content="skro.z: opis, fotografije i 360° pogled projekta.">
+  <meta name="description" data-t="meta.opisRada" content="skro.z: opis, fotografije i 360° pogled projekta.">
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="slike/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="slike/apple-touch-icon.png">
@@ -33,27 +33,31 @@
   <!-- ZAGLAVLJE -->
   <header class="zaglavlje">
     <div class="okvir zaglavlje__unutra">
-      <a class="logo" href="index.html" aria-label="skro.z, početna">
+      <a class="logo" href="index.html" aria-label="skro.z, početna" data-t-aria="logo.pocetna">
         <img class="logo__slika" src="slike/logo.png" alt="skro.z" width="1000" height="588">
       </a>
-      <nav class="meni" aria-label="Glavni meni">
-        <a href="index.html#radovi" class="je-aktivan">Radovi</a>
-        <a href="index.html#usluge">Usluge</a>
-        <a href="index.html#o-meni">O meni</a>
-        <a href="index.html#kontakt">Kontakt</a>
+      <nav class="meni" aria-label="Glavni meni" data-t-aria="meni.glavni">
+        <a href="index.html#radovi" class="je-aktivan" data-t="meni.radovi">Radovi</a>
+        <a href="index.html#usluge" data-t="meni.usluge">Usluge</a>
+        <a href="index.html#o-meni" data-t="meni.oMeni">O meni</a>
+        <a href="index.html#kontakt" data-t="meni.kontakt">Kontakt</a>
       </nav>
+      <div class="jezik" role="group" aria-label="Jezik" data-t-aria="jezik.izbor">
+        <a data-jezik="sr" href="?lang=sr" hreflang="sr" lang="sr">SR</a>
+        <a data-jezik="en" href="?lang=en" hreflang="en" lang="en">EN</a>
+      </div>
       <button class="meni-dugme" type="button" aria-expanded="false" aria-controls="mob-meni">
-        <span class="meni-dugme__tekst">Meni</span><span class="meni-dugme__ikona"></span>
+        <span class="meni-dugme__tekst" data-t="meni.dugme">Meni</span><span class="meni-dugme__ikona"></span>
       </button>
     </div>
   </header>
 
   <div class="mob-meni" id="mob-meni">
-    <nav aria-label="Meni">
-      <a href="index.html#radovi"><span>01</span>Radovi</a>
-      <a href="index.html#usluge"><span>02</span>Usluge</a>
-      <a href="index.html#o-meni"><span>03</span>O meni</a>
-      <a href="index.html#kontakt"><span>04</span>Kontakt</a>
+    <nav aria-label="Meni" data-t-aria="meni.mob">
+      <a href="index.html#radovi"><span>01</span><i data-t="meni.radovi">Radovi</i></a>
+      <a href="index.html#usluge"><span>02</span><i data-t="meni.usluge">Usluge</i></a>
+      <a href="index.html#o-meni"><span>03</span><i data-t="meni.oMeni">O meni</i></a>
+      <a href="index.html#kontakt"><span>04</span><i data-t="meni.kontakt">Kontakt</i></a>
     </nav>
     <div class="mob-meni__kontakt"></div>
   </div>
@@ -72,6 +76,7 @@
   </footer>
 
   <script src="sadrzaj.js"></script>
+  <script src="js/jezik.js"></script>
   <script src="js/sajt.js"></script>
   <script type="module" src="js/panorama.js"></script>
 </body>

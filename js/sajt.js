@@ -10,6 +10,7 @@
     String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const smanjenPokret = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const strana = document.body.dataset.strana;
+  const { T, TP, en, saJezikom, prevediStranicu } = window.SKROZ_JEZIK;
 
   const IKONA = {
     strelica: '<svg viewBox="0 0 34 10" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><path d="M0 5h33M28.5.5 33 5l-4.5 4.5"/></svg>',
@@ -22,13 +23,16 @@
   };
 
   const nadjiRad = (id) => S.radovi.find((r) => r.id === id);
-  const linkRada = (id) => `rad.html?id=${encodeURIComponent(id)}`;
-  const metaRada = (r) => [r.lokacija, r.datum].filter(Boolean).map(esc).join(" · ");
+  const linkRada = (id) => saJezikom(`rad.html?id=${encodeURIComponent(id)}`);
+  const metaRada = (r) => [TP(r, "lokacija"), r.datum].filter(Boolean).map(esc).join(" · ");
+  const nazivPogleda = (p, i) =>
+    en ? p.naziv_en || String(p.naziv || "Pogled " + (i + 1)).replace(/^Pogled\b/, T("rad.pogled")) : p.naziv || T("rad.pogled") + " " + (i + 1);
   const broj = (i) => String(i + 1).padStart(2, "0");
 
   /* ---------- Zajedničko: logo, meni, kontakt, podnožje ---------- */
 
   function popuniZajednicko() {
+    prevediStranicu();
     $$("[data-ime]").forEach((el) => (el.textContent = S.ime));
     $$("[data-godina]").forEach((el) => (el.textContent = new Date().getFullYear()));
 
@@ -45,7 +49,7 @@
       linkovi.innerHTML = [
         k.email && `<a href="mailto:${esc(k.email)}">${esc(k.email)}</a>`,
         k.instagram && `<a href="${esc(k.instagram)}" target="_blank" rel="noopener">Instagram</a>`,
-        `<a href="#vrh" data-na-vrh>Na vrh ↑</a>`,
+        `<a href="#vrh" data-na-vrh>${T("podnozje.naVrh")}</a>`,
       ].filter(Boolean).join("");
     }
   }
@@ -70,7 +74,7 @@
     const postavi = (otvoren) => {
       document.body.classList.toggle("meni-otvoren", otvoren);
       dugme.setAttribute("aria-expanded", String(otvoren));
-      $(".meni-dugme__tekst").textContent = otvoren ? "Zatvori" : "Meni";
+      $(".meni-dugme__tekst").textContent = otvoren ? T("meni.zatvori") : T("meni.dugme");
       document.documentElement.style.overflow = otvoren ? "hidden" : "";
     };
     dugme.addEventListener("click", () => postavi(!document.body.classList.contains("meni-otvoren")));
@@ -138,7 +142,7 @@
     if (!matchMedia("(hover: hover) and (pointer: fine)").matches || smanjenPokret) return;
     const k = document.createElement("div");
     k.className = "kursor";
-    k.textContent = "Pogledaj";
+    k.textContent = T("radovi.pogledaj");
     k.setAttribute("aria-hidden", "true");
     document.body.append(k);
     let x = -200, y = -200, kx = -200, ky = -200, s = 0, ks = 0;
@@ -168,14 +172,19 @@
     const kutija = $(".hero__slajdovi");
     const slajdovi = S.slajder.length ? S.slajder : S.radovi.map((r) => ({ slika: r.naslovna, naslov: r.naslov, rad: r.id }));
     const trajanje = Math.max(2, Number(S.slajderSekundi) || 5) * 1000;
+    const naslovSlajda = (s) => {
+      const rad = s.rad && nadjiRad(s.rad);
+      if (en) return s.naslov_en || (rad ? TP(rad, "naslov") : s.naslov) || "";
+      return s.naslov || (rad ? rad.naslov : "");
+    };
     hero.style.setProperty("--trajanje", trajanje + "ms");
 
     kutija.innerHTML = slajdovi
-      .map((s, i) => `<div class="slajd${i === 0 ? " je-aktivan" : ""}"><img src="${esc(s.slika)}" alt="${esc(s.naslov || "")}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}></div>`)
+      .map((s, i) => `<div class="slajd${i === 0 ? " je-aktivan" : ""}"><img src="${esc(s.slika)}" alt="${esc(naslovSlajda(s))}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}></div>`)
       .join("");
     const trake = $(".hero__trake");
     trake.innerHTML = slajdovi
-      .map((_, i) => `<button class="traka" type="button" aria-label="Slika ${i + 1}"><i></i></button>`)
+      .map((_, i) => `<button class="traka" type="button" aria-label="${T("hero.slika")} ${i + 1}"><i></i></button>`)
       .join("");
 
     const el = $$(".slajd", kutija);
@@ -189,7 +198,8 @@
       natpis.classList.add("menja");
       setTimeout(() => {
         const rad = s.rad && nadjiRad(s.rad);
-        natpis.innerHTML = `<span>${esc(s.naslov || "")}${rad && rad.lokacija ? " · " + esc(rad.lokacija.split(",")[0]) : ""}</span>${rad ? IKONA.strelica : ""}`;
+        const mesto = rad ? TP(rad, "lokacija") : "";
+        natpis.innerHTML = `<span>${esc(naslovSlajda(s))}${mesto ? " · " + esc(mesto.split(",")[0]) : ""}</span>${rad ? IKONA.strelica : ""}`;
         natpis.setAttribute("href", rad ? linkRada(rad.id) : "#radovi");
         natpis.classList.remove("menja");
       }, 300);
@@ -272,13 +282,13 @@
       .map((r, i) => `
         <a class="rad" href="${linkRada(r.id)}" data-pojavi="slika" style="--kasni:${(i % 2) * 0.12}s">
           <div class="rad__slika otkrij">
-            <img src="${esc(r.naslovna)}" alt="${esc(r.naslov)}" loading="lazy">
+            <img src="${esc(r.naslovna)}" alt="${esc(TP(r, "naslov"))}" loading="lazy">
             ${r.panorame && r.panorame.length ? `<span class="znacka">${IKONA.pano}360°</span>` : ""}
-            <span class="rad__pogledaj">Pogledaj ${IKONA.strelica}</span>
+            <span class="rad__pogledaj">${T("radovi.pogledaj")} ${IKONA.strelica}</span>
           </div>
           <div class="rad__info">
             <span class="rad__broj">${broj(i)}</span>
-            <h3 class="rad__naslov">${esc(r.naslov)}</h3>
+            <h3 class="rad__naslov">${esc(TP(r, "naslov"))}</h3>
             <p class="rad__meta">${metaRada(r)}</p>
           </div>
         </a>`)
@@ -286,13 +296,13 @@
   }
 
   function usluge() {
-    $(".usluge__uvod").textContent = S.usluge.uvod;
+    $(".usluge__uvod").textContent = TP(S.usluge, "uvod");
     $(".usluge__lista").innerHTML = S.usluge.stavke
       .map((u, i) => `
         <li class="usluga" data-pojavi style="--kasni:${Math.min(i, 4) * 0.06}s">
           <span class="usluga__broj">${broj(i)}</span>
-          <h3 class="usluga__naslov">${esc(u.naslov)}</h3>
-          <p class="usluga__tekst">${esc(u.tekst)}</p>
+          <h3 class="usluga__naslov">${esc(TP(u, "naslov"))}</h3>
+          <p class="usluga__tekst">${esc(TP(u, "tekst"))}</p>
         </li>`)
       .join("");
   }
@@ -302,10 +312,11 @@
     if (S.oMeni.slika) $("img", figura).src = S.oMeni.slika;
     else figura.remove();
     const ist = $(".o-meni__istaknuto");
-    const reci = S.oMeni.istaknuto.trim().split(/\s+/);
-    ist.setAttribute("aria-label", S.oMeni.istaknuto);
+    const istaknuto = TP(S.oMeni, "istaknuto");
+    const reci = istaknuto.trim().split(/\s+/);
+    ist.setAttribute("aria-label", istaknuto);
     ist.innerHTML = reci.map((r) => `<span class="rec" aria-hidden="true">${esc(r)}</span>`).join(" ");
-    $(".o-meni__tekst").innerHTML = S.oMeni.tekst.map((p) => `<p>${esc(p)}</p>`).join("");
+    $(".o-meni__tekst").innerHTML = TP(S.oMeni, "tekst").map((p) => `<p>${esc(p)}</p>`).join("");
 
     // reči se "pale" jedna po jedna dok se skroluje
     const elReci = $$(".rec", ist);
@@ -330,12 +341,12 @@
 
   function kontakt() {
     const k = S.kontakt;
-    $(".kontakt__naslov").textContent = k.naslov;
-    $(".kontakt__tekst").textContent = k.tekst;
+    $(".kontakt__naslov").textContent = TP(k, "naslov");
+    $(".kontakt__tekst").textContent = TP(k, "tekst");
     const stavke = [
-      k.telefon && ["Telefon", `<a href="tel:${esc(k.telefon.replace(/[^\d+]/g, ""))}">${esc(k.telefon)}</a>`],
-      k.email && ["Email", `<a href="mailto:${esc(k.email)}">${esc(k.email)}</a>`],
-      k.adresa && ["Studio", `<p>${esc(k.adresa)}</p>`],
+      k.telefon && [T("kontakt.telefon"), `<a href="tel:${esc(k.telefon.replace(/[^\d+]/g, ""))}">${esc(k.telefon)}</a>`],
+      k.email && [T("kontakt.email"), `<a href="mailto:${esc(k.email)}">${esc(k.email)}</a>`],
+      k.adresa && [T("kontakt.studio"), `<p>${esc(k.adresa)}</p>`],
       k.instagram && ["Instagram", `<a href="${esc(k.instagram)}" target="_blank" rel="noopener">${esc(k.instagramIme || "Instagram")}</a>`],
     ].filter(Boolean);
     $(".kontakt__stavke").innerHTML = stavke
@@ -346,8 +357,8 @@
     if (f && f.naziv) {
       firma.innerHTML = [
         `<span>${esc(f.naziv)}</span>`,
-        f.pib && `<span>PIB: ${esc(f.pib)}</span>`,
-        f.mb && `<span>MB: ${esc(f.mb)}</span>`,
+        f.pib && `<span>${T("firma.pib")}: ${esc(f.pib)}</span>`,
+        f.mb && `<span>${T("firma.mb")}: ${esc(f.mb)}</span>`,
       ].filter(Boolean).join("");
     } else firma.remove();
   }
@@ -383,7 +394,7 @@
   }
 
   function pocetna() {
-    $(".hero__opis").textContent = S.opisPocetna;
+    $(".hero__opis").textContent = TP(S, "opisPocetna");
     const kreniSlajder = slajder();
     radovi();
     usluge();
@@ -407,12 +418,12 @@
     const glavni = $("main");
 
     if (indeks < 0) {
-      document.title = `Rad nije pronađen | ${S.ime}`;
+      document.title = `${T("rad.nijePronadjen")} | ${S.ime}`;
       glavni.innerHTML = `
         <section class="sekcija"><div class="okvir" style="padding-top:var(--zaglavlje)">
-          <span class="oznaka">Greška</span>
-          <h1 class="naslov-sekcije" style="margin:26px 0 32px">Rad nije pronađen</h1>
-          <a class="strelica-link" href="index.html#radovi">Pogledajte sve radove ${IKONA.strelica}</a>
+          <span class="oznaka">${T("rad.greska")}</span>
+          <h1 class="naslov-sekcije" style="margin:26px 0 32px">${T("rad.nijePronadjen")}</h1>
+          <a class="strelica-link" href="${saJezikom("index.html#radovi")}">${T("rad.sviRadoviLink")} ${IKONA.strelica}</a>
         </div></section>`;
       return;
     }
@@ -421,24 +432,26 @@
     const sledeci = S.radovi[(indeks + 1) % S.radovi.length];
     const slike = r.slike && r.slike.length ? r.slike : [r.naslovna];
     const panorame = r.panorame || [];
-    const opis = Array.isArray(r.opis) ? r.opis : String(r.opis || "").split(/\n+/);
+    const naslov = TP(r, "naslov");
+    const opisIzvor = TP(r, "opis");
+    const opis = Array.isArray(opisIzvor) ? opisIzvor : String(opisIzvor || "").split(/\n+/);
     const pasusi = opis.map((t) => t.trim()).filter(Boolean);
     const pp = r.preIPosle && r.preIPosle.pre && r.preIPosle.posle ? r.preIPosle : null;
     let brojSekcija = 0;
     const pozadina = () => (brojSekcija++ % 2 ? " sekcija--siva" : "");
-    document.title = `${r.naslov} | ${S.ime}`;
+    document.title = `${naslov} | ${S.ime}`;
     window.SKROZ_RAD = r;
 
     glavni.innerHTML = `
       <section class="rad-hero">
-        <div class="rad-hero__slika"><img src="${esc(r.naslovna)}" alt="${esc(r.naslov)}" fetchpriority="high"></div>
+        <div class="rad-hero__slika"><img src="${esc(r.naslovna)}" alt="${esc(naslov)}" fetchpriority="high"></div>
         <div class="okvir rad-hero__sadrzaj">
-          <a class="nazad" href="index.html#radovi">${IKONA.nazad} Svi radovi</a>
-          <h1 class="rad-hero__naslov"><span class="maska"><span>${esc(r.naslov)}</span></span></h1>
+          <a class="nazad" href="${saJezikom("index.html#radovi")}">${IKONA.nazad} ${T("rad.sviRadovi")}</a>
+          <h1 class="rad-hero__naslov"><span class="maska"><span>${esc(naslov)}</span></span></h1>
           <div class="rad-hero__meta">
-            ${r.lokacija ? `<div><span>Lokacija</span><b>${esc(r.lokacija)}</b></div>` : ""}
-            ${r.datum ? `<div><span>Datum</span><b>${esc(r.datum)}</b></div>` : ""}
-            ${pasusi.length ? `<div class="rad-hero__opis"><span>Opis</span>${pasusi.map((t) => `<p>${esc(t)}</p>`).join("")}</div>` : ""}
+            ${r.lokacija ? `<div><span>${T("rad.lokacija")}</span><b>${esc(TP(r, "lokacija"))}</b></div>` : ""}
+            ${r.datum ? `<div><span>${T("rad.datum")}</span><b>${esc(r.datum)}</b></div>` : ""}
+            ${pasusi.length ? `<div class="rad-hero__opis"><span>${T("rad.opis")}</span>${pasusi.map((t) => `<p>${esc(t)}</p>`).join("")}</div>` : ""}
           </div>
         </div>
       </section>
@@ -447,18 +460,18 @@
       <section class="sekcija${pozadina()}">
         <div class="okvir">
           <div class="sekcija__glava">
-            <span class="oznaka" data-pojavi>Transformacija</span>
-            <h2 class="naslov-sekcije" data-reci>Pre i posle</h2>
-            <p class="uvod" data-pojavi>Pomerajte liniju levo-desno da uporedite.</p>
+            <span class="oznaka" data-pojavi>${T("rad.transformacija")}</span>
+            <h2 class="naslov-sekcije" data-reci>${T("rad.preIPosle")}</h2>
+            <p class="uvod" data-pojavi>${T("rad.preIPosleUvod")}</p>
           </div>
           <div class="pre-posle" data-pojavi>
-            <img src="${esc(pp.posle)}" alt="${esc(r.naslov)}, posle" loading="lazy">
-            <img class="pre-posle__pre" src="${esc(pp.pre)}" alt="${esc(r.naslov)}, pre" loading="lazy">
-            <span class="pre-posle__oznaka pre-posle__oznaka--pre">Pre</span>
-            <span class="pre-posle__oznaka pre-posle__oznaka--posle">Posle</span>
+            <img src="${esc(pp.posle)}" alt="${esc(naslov)}, ${T("rad.posle")}" loading="lazy">
+            <img class="pre-posle__pre" src="${esc(pp.pre)}" alt="${esc(naslov)}, ${T("rad.pre")}" loading="lazy">
+            <span class="pre-posle__oznaka pre-posle__oznaka--pre">${T("rad.pre")}</span>
+            <span class="pre-posle__oznaka pre-posle__oznaka--posle">${T("rad.posle")}</span>
             <span class="pre-posle__linija"></span>
             <span class="pre-posle__rucka">${IKONA.poredi}</span>
-            <input type="range" min="0" max="100" step="0.1" value="50" aria-label="Poređenje: pre i posle">
+            <input type="range" min="0" max="100" step="0.1" value="50" aria-label="${T("rad.poredjenje")}">
           </div>
         </div>
       </section>` : ""}
@@ -466,14 +479,14 @@
       <section class="sekcija${pozadina()}">
         <div class="okvir">
           <div class="sekcija__glava">
-            <span class="oznaka" data-pojavi>Galerija</span>
-            <h2 class="naslov-sekcije" data-reci>Fotografije</h2>
-            <p class="uvod" data-pojavi>Kliknite na sliku da je uvećate.</p>
+            <span class="oznaka" data-pojavi>${T("rad.galerija")}</span>
+            <h2 class="naslov-sekcije" data-reci>${T("rad.fotografije")}</h2>
+            <p class="uvod" data-pojavi>${T("rad.galerijaUvod")}</p>
           </div>
           <div class="galerija">
             ${slike.map((s, i) => `
-              <button class="galerija__stavka" type="button" data-pojavi="slika" data-indeks="${i}" style="--kasni:${(i % 3 === 2 ? 0.12 : 0)}s" aria-label="Uvećaj sliku ${i + 1}">
-                <span class="otkrij" style="display:block;width:100%;height:100%"><img src="${esc(s)}" alt="${esc(r.naslov)}, slika ${i + 1}" loading="lazy"></span>
+              <button class="galerija__stavka" type="button" data-pojavi="slika" data-indeks="${i}" style="--kasni:${(i % 3 === 2 ? 0.12 : 0)}s" aria-label="${T("rad.uvecaj")} ${i + 1}">
+                <span class="otkrij" style="display:block;width:100%;height:100%"><img src="${esc(s)}" alt="${esc(naslov)}, ${T("rad.slika")} ${i + 1}" loading="lazy"></span>
               </button>`).join("")}
           </div>
         </div>
@@ -483,19 +496,19 @@
       <section class="sekcija pano-sekcija${pozadina()}" id="pano">
         <div class="okvir">
           <div class="sekcija__glava">
-            <span class="oznaka" data-pojavi>360° pogled</span>
-            <h2 class="naslov-sekcije" data-reci>Prošetajte kroz prostor</h2>
-            <p class="uvod" data-pojavi>Prevucite mišem ili prstom da se okrenete. ${panorame.length > 1 ? "Ispod izaberite prostoriju." : ""}</p>
+            <span class="oznaka" data-pojavi>${T("rad.panoOznaka")}</span>
+            <h2 class="naslov-sekcije" data-reci>${T("rad.panoNaslov")}</h2>
+            <p class="uvod" data-pojavi>${T("rad.panoUvod")} ${panorame.length > 1 ? T("rad.panoSobe") : ""}</p>
           </div>
           <div class="pano" data-pojavi>
             <div class="pano__pregledac" id="pano-pregledac"></div>
-            <div class="pano__savet">${IKONA.ruka}<span>Prevucite da pogledate okolo</span></div>
+            <div class="pano__savet">${IKONA.ruka}<span>${T("rad.panoSavet")}</span></div>
           </div>
-          ${panorame.length > 1 ? `<div class="pano__sobe" role="tablist" aria-label="Prostorije">
+          ${panorame.length > 1 ? `<div class="pano__sobe" role="tablist" aria-label="${T("rad.prostorije")}">
             ${panorame.map((p, i) => `
               <button class="soba${i === 0 ? " je-aktivna" : ""}" type="button" role="tab" aria-selected="${i === 0}" data-soba="${i}">
                 <span class="soba__slika"><img src="${esc(p.slicica || p.slika)}" alt="" loading="lazy"></span>
-                <span class="soba__ime">${esc(p.naziv || "Prostorija " + (i + 1))}</span>
+                <span class="soba__ime">${esc(nazivPogleda(p, i))}</span>
               </button>`).join("")}
           </div>` : ""}
         </div>
@@ -505,13 +518,14 @@
       <a class="sledeci" href="${linkRada(sledeci.id)}">
         <div class="sledeci__slika"><img src="${esc(sledeci.naslovna)}" alt="" loading="lazy"></div>
         <div class="okvir sledeci__sadrzaj">
-          <span class="oznaka">Sledeći rad</span>
-          <div class="sledeci__naslov"><span>${esc(sledeci.naslov)}</span>${IKONA.strelica}</div>
+          <span class="oznaka">${T("rad.sledeci")}</span>
+          <div class="sledeci__naslov"><span>${esc(TP(sledeci, "naslov"))}</span>${IKONA.strelica}</div>
         </div>
       </a>` : ""}
     `;
 
-    lightbox(slike, r.naslov);
+    window.SKROZ_NAZIV_POGLEDA = nazivPogleda;
+    lightbox(slike, naslov);
     celeSlike();
     prePosle();
     paralaksa($(".rad-hero__slika"));
@@ -567,14 +581,14 @@
     lb.className = "lightbox";
     lb.setAttribute("role", "dialog");
     lb.setAttribute("aria-modal", "true");
-    lb.setAttribute("aria-label", "Uvećana slika");
+    lb.setAttribute("aria-label", T("lightbox.aria"));
     lb.innerHTML = `
       <div class="lightbox__vrh"><span class="lightbox__brojac"></span>
-        <button class="lightbox__zatvori" type="button">Zatvori <i></i></button></div>
+        <button class="lightbox__zatvori" type="button">${T("lightbox.zatvori")} <i></i></button></div>
       <div class="lightbox__scena">
         <img alt="">
-        ${slike.length > 1 ? `<button class="lightbox__strelica lightbox__strelica--levo" type="button" aria-label="Prethodna slika">${IKONA.levo}</button>
-        <button class="lightbox__strelica lightbox__strelica--desno" type="button" aria-label="Sledeća slika">${IKONA.desno}</button>` : ""}
+        ${slike.length > 1 ? `<button class="lightbox__strelica lightbox__strelica--levo" type="button" aria-label="${T("lightbox.prethodna")}">${IKONA.levo}</button>
+        <button class="lightbox__strelica lightbox__strelica--desno" type="button" aria-label="${T("lightbox.sledeca")}">${IKONA.desno}</button>` : ""}
       </div>
       <div class="lightbox__dno"></div>`;
     document.body.append(lb);
@@ -589,13 +603,13 @@
       brojac.textContent = `${broj(i)} / ${broj(slike.length - 1)}`;
       if (odmah) {
         img.src = slike[i];
-        img.alt = `${naslov}, slika ${i + 1}`;
+        img.alt = `${naslov}, ${T("rad.slika")} ${i + 1}`;
         return;
       }
       img.classList.add("menja");
       setTimeout(() => {
         img.src = slike[i];
-        img.alt = `${naslov}, slika ${i + 1}`;
+        img.alt = `${naslov}, ${T("rad.slika")} ${i + 1}`;
         const pokazi = () => img.classList.remove("menja");
         img.complete ? pokazi() : (img.onload = pokazi);
       }, 220);
