@@ -1,0 +1,12 @@
+{
+  "name": "skroz-api",
+  "private": true,
+  "description": "skro.z: server za investitorske stranice (Cloudflare Worker + OneDrive)",
+  "scripts": {
+    "postavi": "wrangler deploy",
+    "log": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "4.156.0"
+  }
+}

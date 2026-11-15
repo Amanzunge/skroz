@@ -534,8 +534,8 @@
   }
 
   // uspravne fotografije i dugački crteži se ne seku u pločicama galerije
-  function celeSlike() {
-    $$(".galerija__stavka img").forEach((img) => {
+  function celeSlike(koren = document) {
+    $$(".galerija__stavka img", koren).forEach((img) => {
       const proveri = () => {
         const odnos = img.naturalWidth / img.naturalHeight;
         if (odnos && (odnos < 1.15 || odnos > 2.4)) img.classList.add("cela");
@@ -576,7 +576,7 @@
     }, { passive: true });
   }
 
-  function lightbox(slike, naslov) {
+  function lightbox(slike, naslov, koren = document) {
     const lb = document.createElement("div");
     lb.className = "lightbox";
     lb.setAttribute("role", "dialog");
@@ -627,7 +627,7 @@
       poslednjiFokus && poslednjiFokus.focus();
     };
 
-    $$(".galerija__stavka").forEach((b) => b.addEventListener("click", () => otvori(Number(b.dataset.indeks))));
+    $$(".galerija__stavka", koren).forEach((b) => b.addEventListener("click", () => otvori(Number(b.dataset.indeks))));
     $(".lightbox__zatvori", lb).addEventListener("click", zatvori);
     $(".lightbox__strelica--levo", lb)?.addEventListener("click", () => prikazi(i - 1));
     $(".lightbox__strelica--desno", lb)?.addEventListener("click", () => prikazi(i + 1));
@@ -649,6 +649,9 @@
   }
 
   /* ---------- Pokretanje ---------- */
+
+  // pomoćne funkcije za investitorsku stranicu (js/investitor.js)
+  window.SKROZ_UI = { $, $$, esc, IKONA, broj, pojavi, lightbox, celeSlike, uvodnik, paralaksa, smanjenPokret };
 
   popuniZajednicko();
   zaglavlje();

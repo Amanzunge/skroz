@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /investitor.html
+Disallow: /admin.html
+Disallow: /server/
+Disallow: /podaci/

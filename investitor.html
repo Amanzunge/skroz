@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>skro.z</title>
+  <meta name="description" data-t="meta.investitor" content="skro.z: investitorska stranica projekta.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="slike/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="slike/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Roboto:wght@300;400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.min.css">
+  <link rel="stylesheet" href="css/stil.css">
+  <script>
+    try { if (sessionStorage.getItem("skroz-uvod") === "1") document.documentElement.classList.add("bez-uvoda"); } catch (e) {}
+  </script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.min.js",
+        "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.15.1/index.module.js",
+        "@photo-sphere-viewer/autorotate-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/autorotate-plugin@5.15.1/index.module.js",
+        "@photo-sphere-viewer/gyroscope-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/gyroscope-plugin@5.15.1/index.module.js"
+      }
+    }
+  </script>
+</head>
+<body data-strana="investitor" id="vrh">
+
+  <div class="uvodnik" aria-hidden="true"><img class="uvodnik__logo" src="slike/logo.png" alt="" width="1000" height="588"></div>
+  <div class="prelaz" aria-hidden="true"></div>
+
+  <!-- ZAGLAVLJE -->
+  <header class="zaglavlje">
+    <div class="okvir zaglavlje__unutra">
+      <a class="logo" href="index.html" aria-label="skro.z, početna" data-t-aria="logo.pocetna">
+        <img class="logo__slika" src="slike/logo.png" alt="skro.z" width="1000" height="588">
+      </a>
+      <nav class="meni" aria-label="Glavni meni" data-t-aria="meni.glavni">
+        <a href="index.html#radovi" data-t="meni.radovi">Radovi</a>
+        <a href="index.html#usluge" data-t="meni.usluge">Usluge</a>
+        <a href="index.html#o-meni" data-t="meni.oMeni">O meni</a>
+        <a href="index.html#kontakt" data-t="meni.kontakt">Kontakt</a>
+      </nav>
+      <div class="jezik" role="group" aria-label="Jezik" data-t-aria="jezik.izbor">
+        <a data-jezik="sr" href="?lang=sr" hreflang="sr" lang="sr">SR</a>
+        <a data-jezik="en" href="?lang=en" hreflang="en" lang="en">EN</a>
+      </div>
+      <button class="meni-dugme" type="button" aria-expanded="false" aria-controls="mob-meni">
+        <span class="meni-dugme__tekst" data-t="meni.dugme">Meni</span><span class="meni-dugme__ikona"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mob-meni" id="mob-meni">
+    <nav aria-label="Meni" data-t-aria="meni.mob">
+      <a href="index.html#radovi"><span>01</span><i data-t="meni.radovi">Radovi</i></a>
+      <a href="index.html#usluge"><span>02</span><i data-t="meni.usluge">Usluge</i></a>
+      <a href="index.html#o-meni"><span>03</span><i data-t="meni.oMeni">O meni</i></a>
+      <a href="index.html#kontakt"><span>04</span><i data-t="meni.kontakt">Kontakt</i></a>
+    </nav>
+    <div class="mob-meni__kontakt"></div>
+  </div>
+
+  <main></main>
+
+  <!-- PODNOŽJE -->
+  <footer class="podnozje">
+    <div class="okvir">
+      <img class="podnozje__logo" src="slike/logo.png" alt="" width="1000" height="588" loading="lazy">
+      <div class="podnozje__red">
+        <span>© <span data-godina></span> <span data-ime>skro.z</span></span>
+        <div class="podnozje__linkovi"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="sadrzaj.js"></script>
+  <script src="js/jezik.js"></script>
+  <script src="js/sajt.js"></script>
+  <script src="js/investitor.js"></script>
+</body>
+</html>

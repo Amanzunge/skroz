@@ -1,0 +1,26 @@
+# skro.z: server za investitorske stranice (Cloudflare Worker)
+# Postavljanje: npx wrangler deploy  (iz foldera server)
+
+name = "skroz-api"
+main = "src/index.js"
+compatibility_date = "2025-10-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "skroz"
+database_id = "63f1e3a6-7a99-4300-ad41-893ef2a2c471"
+
+[vars]
+# javni sajt i adrese sa kojih sajt sme da poziva server
+SAJT = "https://skroz.rs"
+DOZVOLJENI = "https://skroz.rs,https://www.skroz.rs,http://localhost:5173"
+# glavni folder na OneDrive-u u kome je po jedan folder za svaki projekat
+KOREN = "SKROZ INVESTITORI"
+# Microsoft prijava ("common" = lični i poslovni nalozi)
+MS_TENANT = "common"
+MS_KLIJENT = ""
+
+# Tajne (ne upisuju se ovde, već komandom "npx wrangler secret put IME"):
+#   ADMIN_KLJUC  – ključ za Zoranovu stranicu za upravljanje
+#   MS_TAJNA     – tajna Microsoft aplikacije
