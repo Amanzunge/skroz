@@ -13,3 +13,34 @@ CREATE TABLE IF NOT EXISTS projekti (
   naziv TEXT,
   napravljen TEXT NOT NULL
 );
+
+-- evidencija pregleda po projektu
+CREATE TABLE IF NOT EXISTS pregledi (
+  folder_id TEXT PRIMARY KEY,
+  otvaranja INTEGER NOT NULL DEFAULT 0,
+  prosledjena_otvaranja INTEGER NOT NULL DEFAULT 0,
+  prosledjivanja INTEGER NOT NULL DEFAULT 0,
+  poslednje TEXT
+);
+
+-- oznake (zahtevi za izmenu) na renderima i stranama PDF-a
+-- koordinate su delovi širine/visine slike ili strane (0 do 1)
+CREATE TABLE IF NOT EXISTS oznake (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  folder_id TEXT NOT NULL,
+  fajl_id TEXT NOT NULL,
+  fajl_ime TEXT,
+  strana INTEGER NOT NULL DEFAULT 0,
+  x0 REAL NOT NULL,
+  y0 REAL NOT NULL,
+  x1 REAL NOT NULL,
+  y1 REAL NOT NULL,
+  tekst TEXT NOT NULL,
+  verzija TEXT,
+  verzija_datum TEXT,
+  napravljena TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'otvoreno',
+  resena TEXT,
+  kljuc TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS oznake_projekat ON oznake (folder_id);

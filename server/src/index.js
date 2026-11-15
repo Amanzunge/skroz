@@ -6,6 +6,13 @@
      GET  /projekat?p=TOKEN                 sadržaj jednog projekta (za investitora)
      GET  /fajl?p=TOKEN&id=ID&v=VERZIJA     fajl iz projekta (slika, panorama, PDF)
      GET  /slicica?p=TOKEN&id=ID&v=VERZIJA  mala slika (prva strana PDF-a, render…)
+     POST /otpremi?p=TOKEN&ime=IME          fotografija investitora → folder ON SITE
+     POST /pregled?p=TOKEN&f=1              jedno otvaranje stranice (f=1: preko prosleđenog linka)
+     POST /prosledjeno?p=TOKEN&kanal=…      investitor je prosledio link
+     GET  /oznake?p=TOKEN                   sve oznake (zahtevi za izmenu) projekta
+     POST /oznake?p=TOKEN                   nova oznaka
+     POST /oznake/status?p=TOKEN&id=&status=  rešeno / za izmenu (samo Zoran, X-Kljuc)
+     POST /oznake/obrisi?p=TOKEN&id=&kljuc=   brisanje (onaj ko je napravio ili Zoran)
      GET  /admin/stanje?k=KLJUC             veza sa OneDrive-om i spisak projekata
      POST /admin/novi-link?k=KLJUC&folder=  novi tajni link za projekat (stari prestaje da važi)
      GET  /auth/pocetak?k=KLJUC             Zoranova prijava u Microsoft (jednom)
@@ -45,6 +52,13 @@ async function ruta(req, url, env, ctx) {
   if (put === "/projekat" && get) return projekat(url, env);
   if (put === "/fajl" && get) return fajl(req, url, env, ctx, false);
   if (put === "/slicica" && get) return fajl(req, url, env, ctx, true);
+  if (put === "/otpremi" && req.method === "POST") return otpremi(req, url, env);
+  if (put === "/pregled" && req.method === "POST") return pregled(url, env);
+  if (put === "/prosledjeno" && req.method === "POST") return prosledjeno(url, env);
+  if (put === "/oznake" && get) return oznakeLista(url, env);
+  if (put === "/oznake" && req.method === "POST") return oznakaNova(req, url, env);
+  if (put === "/oznake/status" && req.method === "POST") return oznakaStatus(req, url, env);
+  if (put === "/oznake/obrisi" && req.method === "POST") return oznakaObrisi(req, url, env);
   if (put === "/admin/stanje" && get) return adminStanje(req, url, env);
   if (put === "/admin/novi-link" && req.method === "POST") return adminNoviLink(req, url, env);
   if (put === "/auth/pocetak" && get) return authPocetak(req, url, env);
@@ -81,6 +95,11 @@ function nasumicno(duzina = 22) {
 function proveriAdmina(req, url, env) {
   const kljuc = req.headers.get("X-Kljuc") || url.searchParams.get("k") || "";
   if (!env.ADMIN_KLJUC || kljuc.length < 16 || kljuc !== env.ADMIN_KLJUC) throw new Greska(401, "Pogrešan ključ.");
+}
+
+function jeAdmin(req, url, env) {
+  const kljuc = req.headers.get("X-Kljuc") || url.searchParams.get("k") || "";
+  return !!env.ADMIN_KLJUC && kljuc.length >= 16 && kljuc === env.ADMIN_KLJUC;
 }
 
 async function procitaj(env, kljuc) {
@@ -366,6 +385,22 @@ async function adminStanje(req, url, env) {
     }
     odgovor.projekti.push({ folder: f.id, naziv: f.name, token, izmenjen: f.lastModifiedDateTime });
   }
+  const pregledi = await env.DB.prepare("SELECT * FROM pregledi").all();
+  const mapaPregleda = new Map((pregledi.results || []).map((r) => [r.folder_id, r]));
+  const zahtevi = await env.DB.prepare(
+    "SELECT folder_id, SUM(status = 'otvoreno') AS otvoreni, SUM(status = 'reseno') AS reseni FROM oznake GROUP BY folder_id"
+  ).all();
+  const mapaZahteva = new Map((zahtevi.results || []).map((r) => [r.folder_id, r]));
+  for (const pr of odgovor.projekti) {
+    const pg = mapaPregleda.get(pr.folder) || {};
+    const zh = mapaZahteva.get(pr.folder) || {};
+    pr.otvaranja = pg.otvaranja || 0;
+    pr.prosledjenaOtvaranja = pg.prosledjena_otvaranja || 0;
+    pr.prosledjivanja = pg.prosledjivanja || 0;
+    pr.poslednje = pg.poslednje || null;
+    pr.zahteviOtvoreni = zh.otvoreni || 0;
+    pr.zahteviReseni = zh.reseni || 0;
+  }
   odgovor.projekti.sort((a, b) => poredi(a.naziv, b.naziv));
   return json(odgovor);
 }
@@ -377,4 +412,179 @@ async function adminNoviLink(req, url, env) {
   const r = await env.DB.prepare("UPDATE projekti SET token = ? WHERE folder_id = ?").bind(token, folder).run();
   if (!r.meta || !r.meta.changes) throw new Greska(404, "Projekat ne postoji.");
   return json({ token });
+}
+
+/* ---------- fotografije investitora (ON SITE) ---------- */
+
+const NAJVISE_MB = 40;
+
+async function onsiteFolder(env, folderId) {
+  const deca = await svaDeca(env, folderId);
+  const postojeci = deca.find((d) => d.folder && vrstaFoldera(d.name) === "onsite");
+  if (postojeci) return postojeci.id;
+  const r = await graph(env, `/me/drive/items/${encodeURIComponent(folderId)}/children`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: "ON SITE", folder: {}, "@microsoft.graph.conflictBehavior": "replace" }),
+  });
+  if (!r.ok) {
+    console.error("ON SITE folder:", r.status, await r.text());
+    throw new Greska(502, "Slanje trenutno nije moguće.");
+  }
+  return (await r.json()).id;
+}
+
+function imeFajla(original, tip) {
+  const vreme = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Belgrade", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit",
+  }).format(new Date()).replace(":", "-");
+  let ime = String(original || "").split(/[\\/]/).pop().replace(/[\\/:*?"<>|#%&{}~]/g, " ").replace(/\s+/g, " ").trim();
+  if (!ime) ime = "fotografija";
+  ime = ime.slice(-80);
+  if (!/\.[a-z0-9]{2,5}$/i.test(ime)) ime += "." + ((tip.split("/")[1] || "jpg").replace("jpeg", "jpg"));
+  return `${vreme} investitor - ${ime}`;
+}
+
+async function otpremi(req, url, env) {
+  const folderId = await projekatPoTokenu(env, url.searchParams.get("p"));
+  const tip = (req.headers.get("Content-Type") || "").toLowerCase();
+  if (!/^image\//.test(tip)) throw new Greska(400, "Dozvoljene su samo fotografije.");
+  const podaci = await req.arrayBuffer();
+  const velicina = podaci.byteLength;
+  if (!velicina) throw new Greska(400, "Fotografija je prazna.");
+  if (velicina > NAJVISE_MB * 1024 * 1024) throw new Greska(413, `Fotografija je prevelika (najviše ${NAJVISE_MB} MB).`);
+
+  const roditelj = await onsiteFolder(env, folderId);
+  const ime = imeFajla(url.searchParams.get("ime"), tip);
+  const putanja = `/me/drive/items/${encodeURIComponent(roditelj)}:/${encodeURIComponent(ime)}:`;
+
+  if (velicina <= 4 * 1024 * 1024) {
+    const r = await graph(env, `${putanja}/content?@microsoft.graph.conflictBehavior=rename`, {
+      method: "PUT",
+      headers: { "Content-Type": tip },
+      body: podaci,
+    });
+    if (!r.ok) {
+      console.error("Otpremanje:", r.status, await r.text());
+      throw new Greska(502, "Slanje nije uspelo. Pokušajte ponovo.");
+    }
+  } else {
+    const r = await graph(env, `${putanja}/createUploadSession`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item: { "@microsoft.graph.conflictBehavior": "rename" } }),
+    });
+    if (!r.ok) {
+      console.error("Sesija za slanje:", r.status, await r.text());
+      throw new Greska(502, "Slanje nije uspelo. Pokušajte ponovo.");
+    }
+    const { uploadUrl } = await r.json();
+    const DEO = 327680 * 30; // delovi od ~9,4 MB (Microsoft traži umnožak od 320 KB)
+    for (let od = 0; od < velicina; od += DEO) {
+      const doo = Math.min(od + DEO, velicina);
+      const d = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Range": `bytes ${od}-${doo - 1}/${velicina}` },
+        body: podaci.slice(od, doo),
+      });
+      if (!d.ok) {
+        console.error("Deo slanja:", d.status, await d.text());
+        throw new Greska(502, "Slanje nije uspelo. Pokušajte ponovo.");
+      }
+    }
+  }
+  return json({ ok: true, ime });
+}
+
+/* ---------- evidencija pregleda ---------- */
+
+async function pregled(url, env) {
+  const folderId = await projekatPoTokenu(env, url.searchParams.get("p"));
+  const prosledjen = url.searchParams.get("f") === "1" ? 1 : 0;
+  await env.DB.prepare(
+    `INSERT INTO pregledi (folder_id, otvaranja, prosledjena_otvaranja, prosledjivanja, poslednje) VALUES (?, 1, ?, 0, ?)
+     ON CONFLICT(folder_id) DO UPDATE SET otvaranja = otvaranja + 1,
+       prosledjena_otvaranja = prosledjena_otvaranja + excluded.prosledjena_otvaranja, poslednje = excluded.poslednje`
+  ).bind(folderId, prosledjen, new Date().toISOString()).run();
+  return json({ ok: true });
+}
+
+async function prosledjeno(url, env) {
+  const folderId = await projekatPoTokenu(env, url.searchParams.get("p"));
+  await env.DB.prepare(
+    `INSERT INTO pregledi (folder_id, otvaranja, prosledjena_otvaranja, prosledjivanja) VALUES (?, 0, 0, 1)
+     ON CONFLICT(folder_id) DO UPDATE SET prosledjivanja = prosledjivanja + 1`
+  ).bind(folderId).run();
+  return json({ ok: true });
+}
+
+/* ---------- oznake (zahtevi za izmenu) ---------- */
+
+function oznakaZaSajt(r) {
+  return {
+    id: r.id,
+    fajl: r.fajl_id,
+    strana: r.strana,
+    x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1,
+    tekst: r.tekst,
+    verzija: r.verzija,
+    verzijaDatum: r.verzija_datum,
+    napravljena: r.napravljena,
+    status: r.status,
+    resena: r.resena,
+  };
+}
+
+async function oznakeLista(url, env) {
+  const folderId = await projekatPoTokenu(env, url.searchParams.get("p"));
+  const r = await env.DB.prepare("SELECT * FROM oznake WHERE folder_id = ? ORDER BY id").bind(folderId).all();
+  return json({ oznake: (r.results || []).map(oznakaZaSajt) });
+}
+
+const broj01 = (v) => Math.min(1, Math.max(0, Number(v) || 0));
+
+async function oznakaNova(req, url, env) {
+  const folderId = await projekatPoTokenu(env, url.searchParams.get("p"));
+  let d;
+  try { d = await req.json(); } catch (e) { throw new Greska(400, "Neispravan zahtev."); }
+  const tekst = String(d.tekst || "").trim().slice(0, 1500);
+  if (!tekst) throw new Greska(400, "Upišite šta treba promeniti.");
+  if (!/^[A-Za-z0-9!._-]+$/.test(String(d.fajl || ""))) throw new Greska(400, "Neispravan zahtev.");
+  const [x0, x1] = [broj01(d.x0), broj01(d.x1)].sort((a, b) => a - b);
+  const [y0, y1] = [broj01(d.y0), broj01(d.y1)].sort((a, b) => a - b);
+  const kljuc = nasumicno(24);
+  const sada = new Date().toISOString();
+  const r = await env.DB.prepare(
+    `INSERT INTO oznake (folder_id, fajl_id, fajl_ime, strana, x0, y0, x1, y1, tekst, verzija, verzija_datum, napravljena, status, kljuc)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'otvoreno', ?)`
+  ).bind(folderId, d.fajl, String(d.ime || "").slice(0, 200), Math.max(0, parseInt(d.strana, 10) || 0), x0, y0, x1, y1,
+    tekst, String(d.v || "").slice(0, 40), String(d.izmenjen || "").slice(0, 40), sada, kljuc).run();
+  const id = r.meta && r.meta.last_row_id;
+  const red = await env.DB.prepare("SELECT * FROM oznake WHERE id = ?").bind(id).first();
+  return json({ oznaka: oznakaZaSajt(red), kljuc });
+}
+
+async function oznakaStatus(req, url, env) {
+  proveriAdmina(req, url, env);
+  const folderId = await projekatPoTokenu(env, url.searchParams.get("p"));
+  const id = parseInt(url.searchParams.get("id"), 10);
+  const status = url.searchParams.get("status") === "reseno" ? "reseno" : "otvoreno";
+  const resena = status === "reseno" ? new Date().toISOString() : null;
+  const r = await env.DB.prepare("UPDATE oznake SET status = ?, resena = ? WHERE id = ? AND folder_id = ?")
+    .bind(status, resena, id, folderId).run();
+  if (!r.meta || !r.meta.changes) throw new Greska(404, "Oznaka ne postoji.");
+  const red = await env.DB.prepare("SELECT * FROM oznake WHERE id = ?").bind(id).first();
+  return json({ oznaka: oznakaZaSajt(red) });
+}
+
+async function oznakaObrisi(req, url, env) {
+  const folderId = await projekatPoTokenu(env, url.searchParams.get("p"));
+  const id = parseInt(url.searchParams.get("id"), 10);
+  const red = await env.DB.prepare("SELECT kljuc, status FROM oznake WHERE id = ? AND folder_id = ?").bind(id, folderId).first();
+  if (!red) throw new Greska(404, "Oznaka ne postoji.");
+  const admin = jeAdmin(req, url, env);
+  const autor = (url.searchParams.get("kljuc") || "") === red.kljuc && red.status === "otvoreno";
+  if (!admin && !autor) throw new Greska(403, "Ovu oznaku ne možete da obrišete.");
+  await env.DB.prepare("DELETE FROM oznake WHERE id = ?").bind(id).run();
+  return json({ ok: true });
 }
