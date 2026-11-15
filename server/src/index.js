@@ -298,12 +298,13 @@ async function fajl(req, url, env, ctx, slicica) {
   const v = url.searchParams.get("v") || "0";
   if (!/^[A-Za-z0-9!._-]+$/.test(id)) throw new Greska(400, "Neispravan zahtev.");
 
+  // link se proverava uvek, i pre keša: posle "Novog linka" stari ne daje ni fajlove iz keša
+  const folderId = await projekatPoTokenu(env, token);
   const kes = caches.default;
-  const kljucKesa = new Request(`https://kes.skroz/${slicica ? "s" : "f"}/${token}/${id}/${v}`);
+  const kljucKesa = new Request(`https://kes.skroz/${slicica ? "s" : "f"}/${encodeURIComponent(folderId)}/${id}/${v}`);
   const izKesa = await kes.match(kljucKesa);
   if (izKesa) return izKesa;
 
-  const folderId = await projekatPoTokenu(env, token);
   const item = await graphJson(env, `/me/drive/items/${encodeURIComponent(id)}?$select=id,name,file,parentReference`);
   if (!item || !item.file) throw new Greska(404, "Fajl ne postoji.");
   // fajl mora biti u folderu projekta ili u nekom od njegovih podfoldera
